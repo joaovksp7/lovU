@@ -1,0 +1,1196 @@
+/* ==========================================================================
+   Nosso Namoro — folha de estilo única.
+   Estética: azul-marinho (o céu e o mar, com estrelas, lua e estrelas-do-mar)
+   e vermelho vinho (as rosas, os espinhos e as folhas).
+   Ordem: tokens → base → céu → tela de entrada → seções → enfeites → contador
+          → timeline → calendário → galeria → lightbox → trilha → player
+          → rodapé → responsivo.
+   Regra do projeto: usar sempre os tokens do :root, nunca hex solto.
+
+   A decoração toda sai de dois desenhos em assets/elementos/, repetidos de
+   seção em seção: o ramo de rosas e a estrela-do-mar. É sempre a mesma
+   imagem — o que muda a cada aparição é tamanho, giro e transparência.
+   ========================================================================== */
+
+/* ------------------------------- 1. TOKENS ------------------------------- */
+:root {
+  /* o céu e o mar */
+  --azul-noite:    #16305A;   /* o céu lá no alto */
+  --marinho:       #0D1F3C;   /* o azul-marinho de base */
+  --marinho-fundo: #06122A;   /* o fundo do mar */
+  --painel:        #14294C;   /* cartões e caixas */
+  --painel-alto:   #1B3660;   /* cartão em destaque, hover */
+  --azul-luar:     #7C9BCF;
+  --luar:          #E8EFFC;
+  --estrela:       #F2D9A0;
+
+  /* as rosas, os espinhos e as folhas */
+  --vinho:        #7E1E32;
+  --vinho-claro:  #A83A51;
+  --vinho-escuro: #4E0F1E;
+  --petala:       #E08497;
+  --folha:        #35735A;
+
+  /* texto */
+  --texto:        #E8EFFC;
+  --texto-suave:  #9DB2D8;
+  --texto-claro:  #FFF3F1;   /* sobre o vinho */
+
+  /* brilhos e véus (as versões translúcidas dos tokens acima) */
+  --brilho-estrela:       rgba(232, 239, 252, .95);
+  --brilho-estrela-fraco: rgba(232, 239, 252, .55);
+  --brilho-lua:           rgba(242, 217, 160, .30);
+  --vidro:                rgba(232, 239, 252, .12);
+  --vidro-forte:          rgba(232, 239, 252, .26);
+  --veu:                  rgba(4, 12, 28, .94);
+
+  /* traços */
+  --borda:        rgba(124, 155, 207, .22);
+  --borda-vinho:  rgba(168, 58, 81, .55);
+  --sombra:       0 6px 22px rgba(3, 10, 24, .45);
+  --sombra-forte: 0 14px 40px rgba(3, 10, 24, .6);
+
+  /* medidas */
+  --raio:       18px;
+  --raio-p:     10px;
+  --largura:    1080px;
+  --respiro:    clamp(3rem, 8vw, 6rem);
+
+  /* movimento */
+  --transicao: 320ms cubic-bezier(.22, .61, .36, 1);
+
+  /* tipografia */
+  --serif: "Playfair Display", Georgia, serif;
+  --sans:  "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Os dois desenhos. Caminho relativo a esta folha (css/), e é aqui — e só
+     aqui — que ele aparece: trocar o arquivo é mexer nestas duas linhas.
+     rosas-recorte.png é o rosas.png com o fundo branco removido; o original
+     continua na pasta, intocado. */
+  --rosas:       url("../assets/elementos/rosas-recorte.png");
+  --estrela-mar: url("../assets/elementos/estrela-do-mar.webp");
+
+  /* proporção dos arquivos, para a altura dos enfeites sair sozinha */
+  --rosas-proporcao: 900 / 550;
+}
+
+/* -------------------------------- 2. BASE -------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* O degradê fica no <html>, que é quem pinta a tela toda, e acompanha a
+   ALTURA DA PÁGINA: começa no céu lá em cima e termina no fundo do mar lá
+   embaixo — rolar é mergulhar. Nada de `background-attachment: fixed`: o
+   Safari do iPhone não o respeita direito, e o celular é o alvo aqui.
+   A cor sólida atrás cobre o que sobra quando a tela dá aquele repique. */
+html {
+  scroll-behavior: smooth;
+  background:
+    linear-gradient(180deg,
+      var(--azul-noite) 0%,
+      var(--marinho) 35%,
+      var(--marinho-fundo) 85%) no-repeat
+    var(--marinho-fundo);
+}
+
+body {
+  margin: 0;
+  background: transparent;
+  color: var(--texto);
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.2; margin: 0; }
+p { margin: 0; }
+img, video { max-width: 100%; display: block; }
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--estrela);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* enquanto a tela de entrada está aberta, a página não rola */
+body.travado { overflow: hidden; }
+
+/* -------------------------- 3. O CÉU ESTRELADO --------------------------- */
+/* Duas camadas atrás de tudo (z-index negativo), cintilando fora de fase uma
+   da outra. Elas cobrem só o alto do documento e vão junto com a rolagem: as
+   estrelas ficam para trás conforme se afunda. A máscara apaga o fim delas
+   sem deixar corte — preto e transparente aqui não são cor, são opacidade,
+   por isso não saem de token. */
+body::before,
+body::after {
+  content: "";
+  position: absolute;   /* sem ancestral posicionado: colado no topo da página */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 200vh;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 95%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 95%);
+}
+
+/* As estrelas maiores. O Y é porcentagem dos 200vh da camada: 10% já é meia
+   tela abaixo. Por isso vão rareando conforme o número cresce. */
+body::before {
+  background-image:
+    radial-gradient(1.7px 1.7px at  6%  4%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 18%  9%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.9px 1.9px at 27%  3%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 39%  8%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.8px 1.8px at 52%  5%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 63% 12%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.7px 1.7px at 71%  6%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 84% 10%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.9px 1.9px at 93%  4%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 12% 17%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.6px 1.6px at 33% 21%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 58% 19%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.7px 1.7px at 78% 24%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 88% 16%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 21% 33%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 69% 38%, var(--brilho-estrela), transparent 62%);
+  animation: cintilar 7s ease-in-out infinite;
+}
+
+/* a poeira de estrelas menores, cintilando na contramão */
+body::after {
+  background-image:
+    radial-gradient(1.1px 1.1px at  9%  7%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 22%  3%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 31% 11%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 44%  2%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 49% 14%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 68% 16%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 74%  9%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 81%  3%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 91% 13%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 15% 26%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 38% 29%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 60% 27%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 86% 31%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 45% 44%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 82% 49%, var(--brilho-estrela-fraco), transparent 60%);
+  animation: cintilar 9s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+@keyframes cintilar {
+  0%, 100% { opacity: .7; }
+  50%      { opacity: 1; }
+}
+
+/* --------------------------- 4. TELA DE ENTRADA --------------------------- */
+.entrada {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  text-align: center;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 8%, var(--azul-noite) 0%, var(--marinho) 48%, var(--marinho-fundo) 100%);
+  transition: opacity 900ms ease, visibility 900ms ease;
+}
+
+.entrada--saindo { opacity: 0; visibility: hidden; }
+
+/* o céu só da entrada: estrelas mais densas, mais perto do rosto dela */
+.entrada__ceu {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.entrada__ceu::before,
+.entrada__ceu::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.entrada__ceu::before {
+  background-image:
+    radial-gradient(1.8px 1.8px at 11% 14%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 24%  7%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2px   2px   at 35% 21%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 47% 11%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.7px 1.7px at 58% 26%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 69%  8%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.9px 1.9px at 82% 30%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 91% 15%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.6px 1.6px at  7% 38%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 29% 47%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.8px 1.8px at 73% 52%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 94% 44%, var(--brilho-estrela), transparent 62%);
+  animation: cintilar 6s ease-in-out infinite;
+}
+
+.entrada__ceu::after {
+  background-image:
+    radial-gradient(1.1px 1.1px at 16% 25%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 31% 33%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 43% 18%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 54% 40%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 65% 15%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 77% 41%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 88% 22%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 20% 56%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 62% 61%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 85% 66%, var(--brilho-estrela-fraco), transparent 60%);
+  animation: cintilar 8s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+/* A lua: um círculo transparente com uma sombra INTERNA deslocada para a
+   esquerda — o que sobra sem cobrir é a foice do lado direito. A sombra de
+   fora é o halo do luar. */
+.lua {
+  position: absolute;
+  top: 8%;
+  left: 9%;      /* à esquerda: o canto direito é do ramo de rosas */
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  box-shadow:
+    inset -19px 5px 0 0 var(--estrela),
+    0 0 52px 12px var(--brilho-lua);
+}
+
+/* `width` e não `max-width`: num item centralizado (fit-content) a
+   porcentagem de max-width é cíclica e o navegador a ignora, e aí o texto
+   vaza pela lateral. Com largura definida o texto quebra na hora certa. */
+.entrada__conteudo {
+  position: relative;   /* acima da camada do céu */
+  z-index: 1;
+  width: min(100%, 34rem);
+}
+
+.entrada__super {
+  font-size: .78rem;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--estrela);
+  opacity: .8;
+  margin-bottom: 1rem;
+}
+
+.entrada__titulo {
+  font-size: clamp(1.8rem, 7.4vw, 4rem);
+  color: var(--luar);
+  text-shadow: 0 0 28px var(--brilho-lua);
+  margin-bottom: .9rem;
+  text-wrap: balance;
+}
+
+.entrada__frase {
+  max-width: 30rem;
+  margin: 0 auto 2.8rem;
+  color: var(--texto-suave);
+  font-size: clamp(.95rem, 2.6vw, 1.08rem);
+}
+
+/* Coração em CSS: um quadrado girado -45° + dois círculos.
+   Os círculos vão ACIMA e à DIREITA: são as duas bordas que se encontram no
+   canto superior direito, e é esse canto que a rotação leva para o topo —
+   deixando o canto oposto (o bico) apontando para baixo. */
+.coracao {
+  position: relative;
+  width: 118px;
+  height: 118px;
+  /* a rotação já deixa o coração centrado na horizontal; a margem de cima
+     compensa a lobada que sobe para fora da caixa do botão */
+  margin: 3.6rem auto 1.2rem;
+  transform: rotate(-45deg);
+  background: var(--vinho);
+  border-radius: 0 0 0 14px;     /* arredonda de leve o bico */
+  box-shadow: var(--sombra-forte);
+  transition: transform var(--transicao), background var(--transicao);
+}
+.coracao::before,
+.coracao::after {
+  content: "";
+  position: absolute;
+  width: 118px;
+  height: 118px;
+  background: inherit;
+  border-radius: 50%;
+}
+.coracao::before { top: -59px; left: 0; }
+.coracao::after  { top: 0; left: 59px; }
+
+.coracao__texto {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  /* desgira o texto e o sobe até o centro visual do coração, que fica
+     acima do centro da caixa quadrada do botão */
+  transform: translate(29.5px, -29.5px) rotate(45deg);
+  color: var(--texto-claro);
+  font-family: var(--serif);
+  font-size: 1.32rem;
+  letter-spacing: .04em;
+}
+
+.coracao:hover,
+.coracao:focus-visible {
+  transform: rotate(-45deg) scale(1.07);
+  background: var(--vinho-claro);
+}
+
+/* o conteúdo só aparece depois do clique — mas apenas se houver JS */
+.com-js .conteudo { opacity: 0; transition: opacity 700ms ease; }
+.com-js .conteudo--visivel { opacity: 1; }
+.sem-js .entrada { display: none; }
+
+/* ------------------------------- 5. SEÇÕES ------------------------------- */
+.secao {
+  position: relative;   /* âncora dos enfeites de canto */
+  max-width: var(--largura);
+  margin: 0 auto;
+  padding: var(--respiro) 1.25rem;
+  text-align: center;
+}
+
+.secao__titulo {
+  font-size: clamp(1.65rem, 5vw, 2.5rem);
+  color: var(--luar);
+  text-shadow: 0 0 24px var(--brilho-lua);
+  margin-bottom: .55rem;
+}
+
+.secao__subtitulo {
+  color: var(--texto-suave);
+  font-size: .95rem;
+  margin-bottom: 2.2rem;
+}
+
+/* o divisor é o próprio ramo de rosas, com um fio de luar em volta para
+   descolar a silhueta preta do azul */
+.secao__linha {
+  width: clamp(180px, 48vw, 280px);
+  aspect-ratio: var(--rosas-proporcao);
+  margin: 0 auto 1.2rem;
+  background: var(--rosas) center / contain no-repeat;
+  filter: drop-shadow(0 0 10px var(--brilho-lua));
+}
+
+/* o segundo divisor da página não pode parecer carimbo do primeiro:
+   entra espelhado e torto (secao par = a da timeline) */
+.secao:nth-of-type(even) .secao__linha { transform: rotate(-3deg) scaleX(-1); }
+
+/* revelação ao rolar */
+.com-js [data-revelar] { opacity: 0; transform: translateY(26px); }
+.com-js [data-revelar].revelado {
+  opacity: 1;
+  transform: none;
+  transition: opacity 700ms ease, transform 700ms cubic-bezier(.22, .61, .36, 1);
+}
+
+/* ------------------------ 6. ENFEITES ESPALHADOS -------------------------
+   Toda seção recebe dois enfeites pelos seus pseudo-elementos: o ::before é
+   sempre o ramo de rosas, o ::after é sempre a estrela-do-mar. O que muda de
+   uma seção para a outra é a pose — canto, tamanho, giro e transparência.
+
+   z-index: -1 põe os dois atrás do conteúdo. Como a .secao é `relative` mas
+   sem z-index próprio, ela não cria contexto de empilhamento e os enfeites
+   caem atrás de todo o texto da página, sem nunca cobrir nada. */
+.secao::before,
+.secao::after { content: ""; }
+
+.secao::before,
+.secao::after,
+.enfeite {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.secao::before {
+  background-image: var(--rosas);
+  aspect-ratio: var(--rosas-proporcao);
+  opacity: .26;
+}
+
+.secao::after {
+  background-image: var(--estrela-mar);
+  aspect-ratio: 1;
+  opacity: .5;
+}
+
+/* --- contador: roseira entrando pela esquerda, estrela caída à direita --- */
+#secaoContador::before {
+  width: clamp(190px, 40vw, 380px);
+  top: -3%;
+  left: -7%;
+  transform: rotate(-14deg);
+  opacity: .24;
+}
+#secaoContador::after {
+  width: clamp(46px, 10vw, 84px);
+  bottom: 6%;
+  right: 4%;
+  transform: rotate(34deg);
+}
+
+/* --- timeline: a mesma roseira espelhada, agora subindo pelo rodapé --- */
+#secaoTimeline::before {
+  width: clamp(200px, 42vw, 400px);
+  bottom: 1%;
+  left: -9%;
+  transform: rotate(12deg) scaleX(-1);
+  opacity: .22;
+}
+#secaoTimeline::after {
+  width: clamp(44px, 9vw, 78px);
+  top: 5%;
+  right: 3%;
+  transform: rotate(-22deg);
+  opacity: .45;
+}
+
+/* --- calendário: roseira de cabeça para baixo no alto da direita --- */
+#secaoCalendario::before {
+  width: clamp(180px, 38vw, 360px);
+  top: 2%;
+  right: -8%;
+  transform: rotate(168deg);
+  opacity: .24;
+}
+#secaoCalendario::after {
+  width: clamp(48px, 10vw, 86px);
+  bottom: 7%;
+  left: 4%;
+  transform: rotate(-30deg);
+}
+
+/* --- galeria: enfeites mais apagados, que aqui o conteúdo é denso --- */
+#secaoGaleria::before {
+  width: clamp(190px, 40vw, 380px);
+  bottom: -2%;
+  right: -7%;
+  transform: rotate(-8deg) scaleX(-1);
+  opacity: .18;
+}
+#secaoGaleria::after {
+  width: clamp(44px, 9vw, 76px);
+  top: 4%;
+  left: 3%;
+  transform: rotate(42deg);
+  opacity: .45;
+}
+
+/* --- playlist --- */
+#secaoMusica::before {
+  width: clamp(180px, 38vw, 350px);
+  top: 4%;
+  left: -6%;
+  transform: rotate(-170deg);
+  opacity: .22;
+}
+#secaoMusica::after {
+  width: clamp(50px, 10vw, 88px);
+  bottom: 4%;
+  right: 5%;
+  transform: rotate(18deg);
+}
+
+/* --- os enfeites da tela de entrada, que são <span> e não pseudo:
+       lá os dois pseudo-elementos já são as estrelas do céu --- */
+.enfeite { display: block; }
+
+.enfeite--rosas-baixo-esq,
+.enfeite--rosas-cima-dir {
+  background-image: var(--rosas);
+  aspect-ratio: var(--rosas-proporcao);
+}
+
+.enfeite--rosas-baixo-esq {
+  width: clamp(240px, 64vw, 460px);
+  left: -8%;
+  bottom: -4%;
+  transform: rotate(-6deg);
+  opacity: .5;
+}
+
+.enfeite--rosas-cima-dir {
+  width: clamp(180px, 48vw, 380px);
+  right: -10%;
+  top: -3%;
+  transform: rotate(176deg);
+  opacity: .32;
+}
+
+.enfeite--estrela-baixo-dir {
+  background-image: var(--estrela-mar);
+  aspect-ratio: 1;
+  width: clamp(54px, 13vw, 100px);
+  right: 9%;
+  bottom: 13%;
+  transform: rotate(28deg);
+  opacity: .55;
+}
+
+/* ------------------------------ 7. CONTADOR ------------------------------ */
+.contador {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  /* folga suficiente para o coraçãozinho não encostar no cartão de cima */
+  gap: 2.25rem 1.25rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.cartao {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.2rem 1.4rem 1.8rem;
+  background: linear-gradient(160deg, var(--painel), var(--marinho));
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+}
+
+.cartao--principal {
+  background: linear-gradient(160deg, var(--painel-alto), var(--painel));
+  border-color: var(--borda-vinho);
+}
+
+.cartao__rotulo {
+  font-size: .82rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.cartao__numero {
+  font-family: var(--serif);
+  font-size: clamp(2.8rem, 11vw, 3.9rem);
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--luar);
+  text-shadow: 0 0 26px var(--brilho-lua);
+  font-variant-numeric: tabular-nums;
+}
+
+.cartao__unidade {
+  font-size: 1rem;
+  color: var(--petala);
+  letter-spacing: .06em;
+}
+
+.cartao__desde {
+  margin-top: .7rem;
+  font-size: .78rem;
+  color: var(--texto-suave);
+  opacity: .85;
+}
+
+.cartao__detalhe {
+  margin-top: .9rem;
+  padding-top: .9rem;
+  border-top: 1px dashed var(--borda);
+  width: 100%;
+  font-size: .92rem;
+  color: var(--luar);
+}
+
+.coracao-pulsa {
+  position: absolute;
+  top: -13px;
+  width: 26px;
+  height: 26px;
+  background: var(--vinho-claro);
+  transform: rotate(-45deg);
+  animation: pulsar 2.6s ease-in-out infinite;
+}
+.coracao-pulsa::before,
+.coracao-pulsa::after {
+  content: "";
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  background: inherit;
+  border-radius: 50%;
+}
+.coracao-pulsa::before { top: -13px; left: 0; }
+.coracao-pulsa::after  { top: 0; left: 13px; }
+
+@keyframes pulsar {
+  0%, 100% { transform: rotate(-45deg) scale(1); }
+  50%      { transform: rotate(-45deg) scale(1.16); }
+}
+
+.contador__relogio {
+  margin-top: 1.6rem;
+  font-size: .9rem;
+  color: var(--texto-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------ 8. TIMELINE ------------------------------ */
+.timeline {
+  list-style: none;
+  position: relative;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* a linha central — o caule que sobe */
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: linear-gradient(180deg, transparent, var(--folha) 12%, var(--folha) 88%, transparent);
+}
+
+.marco {
+  position: relative;
+  width: 50%;
+  padding: 0 2.6rem 2.8rem;
+  text-align: right;
+}
+.marco:nth-child(even) {
+  margin-left: 50%;
+  text-align: left;
+}
+
+/* cada marco é uma estrela-do-mar pousada no caule — e nenhuma delas cai
+   virada igual à anterior */
+.marco::before {
+  content: "";
+  position: absolute;
+  top: .35rem;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background: var(--estrela-mar) center / contain no-repeat;
+  filter: drop-shadow(0 0 7px var(--brilho-lua));
+}
+.marco:nth-child(even)::before { right: auto; left: -12px; }
+
+.marco:nth-child(4n+1)::before { transform: rotate(14deg); }
+.marco:nth-child(4n+2)::before { transform: rotate(-32deg); }
+.marco:nth-child(4n+3)::before { transform: rotate(58deg); }
+.marco:nth-child(4n)::before   { transform: rotate(-9deg); }
+
+.marco__data {
+  display: inline-block;
+  font-size: .75rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--estrela);
+  margin-bottom: .3rem;
+}
+
+.marco__titulo { font-size: 1.3rem; color: var(--luar); margin-bottom: .4rem; }
+.marco__descricao { color: var(--texto-suave); font-size: .95rem; }
+
+.marco__foto {
+  margin-top: .9rem;
+  width: 100%;
+  max-width: 260px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-p);
+  box-shadow: var(--sombra);
+  margin-left: auto;
+}
+.marco:nth-child(even) .marco__foto { margin-left: 0; margin-right: auto; }
+
+/* ----------------------------- 9. CALENDÁRIO ----------------------------- */
+.cal {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 1.3rem;
+  background: linear-gradient(160deg, var(--painel), var(--marinho));
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+}
+
+.cal__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.cal__mes {
+  font-size: 1.15rem;
+  color: var(--luar);
+}
+/* só a inicial: `capitalize` deixaria "Outubro De 2025" */
+.cal__mes::first-letter { text-transform: uppercase; }
+
+.cal__seta {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--luar);
+  background: var(--painel-alto);
+  transition: background var(--transicao), color var(--transicao);
+}
+.cal__seta:hover { background: var(--vinho); color: var(--texto-claro); }
+
+.cal__semana,
+.cal__grade {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal__semana {
+  margin-bottom: .5rem;
+  font-size: .72rem;
+  letter-spacing: .1em;
+  color: var(--texto-suave);
+}
+
+.cal__dia {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: var(--raio-p);
+  font-size: .9rem;
+  color: var(--texto-suave);
+  position: relative;
+}
+
+.cal__dia--vazio { visibility: hidden; }
+
+.cal__dia--hoje {
+  border: 1px dashed var(--azul-luar);
+  color: var(--luar);
+  font-weight: 500;
+}
+
+/* só os dias com foto ficam clicáveis */
+.cal__dia--tem-foto {
+  background: linear-gradient(160deg, var(--vinho), var(--vinho-escuro));
+  border: 1px solid var(--vinho-claro);
+  color: var(--texto-claro);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transicao), transform var(--transicao);
+}
+.cal__dia--tem-foto:hover {
+  background: linear-gradient(160deg, var(--vinho-claro), var(--vinho));
+  transform: scale(1.08);
+}
+
+/* a marca do dia com foto é a estrela-do-mar em miniatura; o brilho a
+   descola do vinho da célula */
+.cal__dia--tem-foto::after {
+  content: "";
+  position: absolute;
+  bottom: 1px;
+  width: 14px;
+  height: 14px;
+  background: var(--estrela-mar) center / contain no-repeat;
+  filter: brightness(1.15);
+}
+
+/* cinco giros que se revezam pela grade: dois dias vizinhos nunca têm a
+   estrela na mesma posição */
+.cal__grade > *:nth-child(5n+1)::after { transform: rotate(16deg); }
+.cal__grade > *:nth-child(5n+2)::after { transform: rotate(-24deg); }
+.cal__grade > *:nth-child(5n+3)::after { transform: rotate(47deg); }
+.cal__grade > *:nth-child(5n+4)::after { transform: rotate(-8deg); }
+.cal__grade > *:nth-child(5n)::after   { transform: rotate(31deg); }
+
+/* ------------------------------ 10. GALERIA ------------------------------ */
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.galeria__item {
+  position: relative;
+  padding: 0;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--raio-p);
+  background: var(--painel);
+}
+
+.galeria__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 480ms cubic-bezier(.22, .61, .36, 1);
+}
+.galeria__item:hover img { transform: scale(1.07); }
+
+/* o vídeo não tem miniatura gerada (não há ffmpeg): entra como card com play,
+   e no lugar da imagem que falta vai a roseira */
+.galeria__video {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: .4rem;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(150deg, var(--vinho), var(--vinho-escuro));
+  color: var(--texto-claro);
+}
+.galeria__video::before {
+  content: "";
+  position: absolute;
+  inset: -12% -16%;
+  background: var(--rosas) center / contain no-repeat;
+  transform: rotate(-10deg);
+  opacity: .32;
+}
+/* sobem para cima da roseira */
+.galeria__play,
+.galeria__rotulo { position: relative; z-index: 1; }
+
+.galeria__play { font-size: 1.7rem; line-height: 1; }
+.galeria__rotulo { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; }
+
+/* ------------------------------ 11. LIGHTBOX ------------------------------ */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--veu);
+}
+.lightbox[hidden] { display: none; }
+
+.lightbox__figura {
+  margin: 0;
+  max-width: min(94vw, 1100px);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .8rem;
+}
+
+.lightbox__midia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.lightbox__midia img,
+.lightbox__midia video {
+  max-width: 100%;
+  max-height: 78vh;
+  border-radius: var(--raio-p);
+  box-shadow: var(--sombra-forte);
+}
+
+.lightbox__legenda {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  color: var(--luar);
+  font-size: .85rem;
+  opacity: .85;
+}
+.lightbox__posicao { font-variant-numeric: tabular-nums; opacity: .7; }
+
+.lightbox__fechar,
+.lightbox__seta {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  color: var(--luar);
+  background: var(--vidro);
+  border-radius: 50%;
+  transition: background var(--transicao);
+}
+.lightbox__fechar:hover,
+.lightbox__seta:hover { background: var(--vidro-forte); }
+
+.lightbox__fechar {
+  top: 1rem;
+  right: 1rem;
+  width: 44px;
+  height: 44px;
+  font-size: 1.7rem;
+}
+
+.lightbox__seta {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  font-size: 2rem;
+}
+.lightbox__seta--ant  { left: 1rem; }
+.lightbox__seta--prox { right: 1rem; }
+
+/* --------------------------- 12. TRILHA (topo) --------------------------- */
+/* Faixa comum abrindo o conteúdo — não é fixa, rola embora junto com a
+   página. O respiro de baixo é do contador, que vem logo em seguida. */
+.trilha { padding: 1.5rem 1.25rem 0; }
+.trilha[hidden] { display: none; }
+
+.trilha__caixa {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: .5rem;
+  background: linear-gradient(160deg, var(--painel), var(--marinho));
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+}
+
+/* no lugar da capa do álbum, uma foto nossa sorteada */
+.trilha__capa {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--raio-p);
+  background: var(--painel-alto);
+}
+
+/* min-width: 0 deixa o flex encolher o texto até caber e reticenciar */
+.trilha__texto { flex: 1; min-width: 0; text-align: left; }
+
+.trilha__titulo,
+.trilha__artista {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.trilha__titulo  { font-family: var(--serif); font-size: .98rem; color: var(--luar); }
+.trilha__artista { font-size: .76rem; color: var(--texto-suave); }
+
+.trilha__controles { flex: none; display: flex; align-items: center; gap: .1rem; }
+
+.trilha__botao {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--luar);
+  transition: background var(--transicao), color var(--transicao);
+}
+.trilha__botao:hover { background: var(--painel-alto); }
+
+.trilha__botao--tocar {
+  font-size: .82rem;
+  color: var(--texto-claro);
+  background: var(--vinho);
+}
+.trilha__botao--tocar:hover { background: var(--vinho-claro); color: var(--texto-claro); }
+
+/* ------------------------------- 13. PLAYER ------------------------------- */
+.player {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: .55rem;
+  background: linear-gradient(160deg, var(--painel), var(--marinho));
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+}
+/* o iframe é cross-origin: dá para estilizar a caixa, não o conteúdo */
+.player iframe { display: block; border-radius: 12px; }
+
+/* ------------------------------- 14. RODAPÉ ------------------------------- */
+/* O fim da página é o fundo do mar: a roseira deitada ao fundo e três
+   estrelas-do-mar caídas em tamanhos e giros diferentes. Duas delas moram
+   nos pseudo-elementos do coraçãozinho, que estava sobrando. */
+.rodape {
+  position: relative;
+  padding: 3rem 1.25rem 4.5rem;
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: .85rem;
+}
+.rodape__coracao {
+  display: block;
+  position: relative;
+  font-size: 1.3rem;
+  color: var(--vinho-claro);
+  margin-bottom: .5rem;
+}
+
+.rodape::before,
+.rodape::after,
+.rodape__coracao::before,
+.rodape__coracao::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.rodape::before {
+  background-image: var(--rosas);
+  aspect-ratio: var(--rosas-proporcao);
+  width: min(560px, 96%);
+  left: 50%;
+  bottom: -2%;
+  transform: translateX(-50%) rotate(2deg);
+  opacity: .3;
+}
+
+.rodape::after {
+  background-image: var(--estrela-mar);
+  aspect-ratio: 1;
+  width: clamp(58px, 15vw, 104px);
+  left: 50%;
+  bottom: .4rem;
+  transform: translateX(-215%) rotate(-18deg);
+  opacity: .55;
+}
+
+.rodape__coracao::before,
+.rodape__coracao::after {
+  background-image: var(--estrela-mar);
+  aspect-ratio: 1;
+  top: 50%;
+}
+/* subidas até a altura do coração: embaixo delas passa o texto do rodapé */
+.rodape__coracao::before {
+  width: clamp(42px, 11vw, 72px);
+  left: calc(50% - 150px);
+  transform: translateY(-62%) rotate(32deg);
+  opacity: .45;
+}
+.rodape__coracao::after {
+  width: clamp(34px, 9vw, 58px);
+  left: calc(50% + 96px);
+  transform: translateY(-48%) rotate(-42deg);
+  opacity: .38;
+}
+
+/* ----------------------------- 15. RESPONSIVO ----------------------------- */
+@media (max-width: 720px) {
+  .lua {
+    width: 56px;
+    height: 56px;
+    top: 7%;
+    left: 8%;
+    box-shadow:
+      inset -14px 4px 0 0 var(--estrela),
+      0 0 38px 9px var(--brilho-lua);
+  }
+
+  /* só a largura: a altura sai do aspect-ratio do desenho */
+  .secao__linha { width: clamp(150px, 44vw, 210px); }
+
+  .trilha { padding: 1rem .7rem 0; }
+  .trilha__capa { width: 48px; height: 48px; }
+  .trilha__botao { width: 38px; height: 38px; }
+
+  /* a timeline vira coluna única, com a linha à esquerda */
+  .timeline::before { left: 9px; margin-left: 0; }
+
+  .marco,
+  .marco:nth-child(even) {
+    width: 100%;
+    margin-left: 0;
+    padding: 0 0 2.4rem 2.4rem;
+    text-align: left;
+  }
+  /* a estrela-do-mar encolhe e recentra no caule, agora à esquerda */
+  .marco::before,
+  .marco:nth-child(even)::before {
+    left: 0;
+    right: auto;
+    width: 20px;
+    height: 20px;
+  }
+
+  .marco__foto,
+  .marco:nth-child(even) .marco__foto { margin-left: 0; margin-right: auto; }
+
+  .galeria { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; }
+
+  .cal { padding: 1rem .8rem; }
+  .cal__dia { font-size: .82rem; }
+  .cal__dia--tem-foto::after { width: 12px; height: 12px; }
+
+  /* Enfeites de canto mais discretos: a tela é estreita e o texto passa por
+     cima deles. Vai de `filter: opacity()` e não de `opacity` porque as
+     poses de cada seção são presas por id (#secaoContador etc.) e id ganha
+     de classe em qualquer media query — o filtro multiplica em vez de
+     disputar. */
+  .secao::before,
+  .secao::after,
+  .rodape::before { filter: opacity(.62); }
+
+  .lightbox__seta { width: 44px; height: 44px; font-size: 1.6rem; }
+  .lightbox__seta--ant  { left: .4rem; }
+  .lightbox__seta--prox { right: .4rem; }
+}
+
+@media (max-width: 380px) {
+  .galeria { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* --------------------- 16. QUEM PEDE MENOS MOVIMENTO --------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  /* as estrelas param de cintilar e ficam acesas de uma vez só */
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+
+  /* nada de aparecer deslizando: o conteúdo já nasce no lugar */
+  .com-js [data-revelar] { opacity: 1; transform: none; }
+  .galeria__item:hover img { transform: none; }
+}

@@ -1,0 +1,8 @@
+# Fotos originais do WhatsApp (53 MB). Ficam só na máquina — as versões
+# comprimidas em assets/fotos/ é que vão para o site.
+assets/fotos/originais/
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store

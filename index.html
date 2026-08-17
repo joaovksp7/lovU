@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="sem-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nosso Namoro</title>
+<meta name="description" content="Um cantinho para guardar a nossa história.">
+<meta name="theme-color" content="#0D1F3C">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+
+<!-- Marca que o JS está vivo. Sem isso, um erro de script deixaria a página
+     em branco: os estados iniciais invisíveis só valem quando há JS. -->
+<script>document.documentElement.className = "com-js";</script>
+</head>
+<body>
+
+<!-- ==================== TELA DE ENTRADA ==================== -->
+<div class="entrada" id="entrada">
+
+  <!-- O céu da entrada. As estrelas e a lua são CSS; a roseira e a
+       estrela-do-mar são os desenhos de assets/elementos, cada um numa pose.
+       Tudo aqui é decoração: o bloco inteiro é aria-hidden. -->
+  <div class="entrada__ceu" aria-hidden="true">
+    <span class="lua"></span>
+    <span class="enfeite enfeite--rosas-baixo-esq"></span>
+    <span class="enfeite enfeite--rosas-cima-dir"></span>
+    <span class="enfeite enfeite--estrela-baixo-dir"></span>
+  </div>
+
+  <div class="entrada__conteudo">
+    <p class="entrada__super">A nossa história</p>
+    <h1 class="entrada__titulo" id="entradaTitulo">&nbsp;</h1>
+    <p class="entrada__frase" id="entradaFrase"></p>
+    <button type="button" class="coracao" id="btnEntrar">
+      <span class="coracao__texto">Entrar</span>
+    </button>
+  </div>
+</div>
+
+<main class="conteudo" id="conteudo">
+
+  <!-- ==================== TRILHA ====================
+       Nasce escondida: quem a mostra é o js/trilha.js, depois de sortear a
+       música e a foto. Sem JS não há trilha, e a barra não aparece vazia. -->
+  <header class="trilha" id="trilha" hidden>
+    <div class="trilha__caixa">
+
+      <!-- sem src aqui de propósito: src="" faz o navegador rebaixar a
+           própria página. Quem põe a foto sorteada é o trilha.js. -->
+      <img class="trilha__capa" id="trilhaCapa" alt="">
+
+      <div class="trilha__texto">
+        <span class="trilha__titulo" id="trilhaTitulo"></span>
+        <span class="trilha__artista" id="trilhaArtista"></span>
+      </div>
+
+      <div class="trilha__controles">
+        <button type="button" class="trilha__botao" id="trilhaAnterior" aria-label="Música anterior">&lsaquo;</button>
+        <button type="button" class="trilha__botao trilha__botao--tocar" id="trilhaTocar" aria-label="Tocar a música">&#9654;</button>
+        <button type="button" class="trilha__botao" id="trilhaProxima" aria-label="Próxima música">&rsaquo;</button>
+      </div>
+
+      <!-- preload="none": nada é baixado antes de ela entrar -->
+      <audio id="trilhaAudio" preload="none" loop></audio>
+
+    </div>
+  </header>
+
+  <!-- ==================== CONTADOR ==================== -->
+  <section class="secao secao--contador" id="secaoContador" data-revelar>
+    <h2 class="secao__titulo">Faz quanto tempo</h2>
+    <p class="secao__linha"></p>
+
+    <div class="contador">
+      <article class="cartao">
+        <span class="cartao__rotulo">Recap</span>
+        <strong class="cartao__numero" id="diasConversa">—</strong>
+        <span class="cartao__unidade">dias</span>
+        <span class="cartao__desde">desde 13 de outubro de 2025</span>
+      </article>
+
+      <article class="cartao cartao--principal">
+        <span class="coracao-pulsa" aria-hidden="true"></span>
+        <span class="cartao__rotulo">Namoro</span>
+        <strong class="cartao__numero" id="diasNamoro">—</strong>
+        <span class="cartao__unidade">dias</span>
+        <span class="cartao__desde">desde 22 de maio de 2026</span>
+        <p class="cartao__detalhe" id="detalheNamoro"></p>
+      </article>
+    </div>
+
+    <p class="contador__relogio" id="relogioVivo" aria-live="off"></p>
+  </section>
+
+  <!-- ==================== TIMELINE ==================== -->
+  <section class="secao" id="secaoTimeline" data-revelar>
+    <h2 class="secao__titulo">Os nossos marcos</h2>
+    <p class="secao__linha"></p>
+    <ol class="timeline" id="timelineLista"></ol>
+  </section>
+
+  <!-- ==================== CALENDÁRIO ==================== -->
+  <section class="secao" id="secaoCalendario" data-revelar>
+    <h2 class="secao__titulo">Nosso calendário</h2>
+    <p class="secao__subtitulo">Os dias marcados com um coração têm foto. Toca para ver.</p>
+
+    <div class="cal">
+      <header class="cal__topo">
+        <button type="button" class="cal__seta" id="calAnterior" aria-label="Mês anterior">&lsaquo;</button>
+        <h3 class="cal__mes" id="calMes" aria-live="polite">&nbsp;</h3>
+        <button type="button" class="cal__seta" id="calProximo" aria-label="Próximo mês">&rsaquo;</button>
+      </header>
+
+      <div class="cal__semana" aria-hidden="true">
+        <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+      </div>
+
+      <div class="cal__grade" id="calGrade"></div>
+    </div>
+  </section>
+
+  <!-- ==================== GALERIA ==================== -->
+  <section class="secao" id="secaoGaleria" data-revelar>
+    <h2 class="secao__titulo">Todas as nossas fotos</h2>
+    <p class="secao__subtitulo" id="galeriaContagem"></p>
+    <div class="galeria" id="galeria"></div>
+  </section>
+
+  <!-- ==================== MÚSICA ====================
+       O player do Spotify é só para ver e abrir a playlist — quem toca
+       sozinho é a trilha lá de cima. -->
+  <section class="secao" id="secaoMusica" data-revelar>
+    <h2 class="secao__titulo">A nossa playlist</h2>
+    <p class="secao__subtitulo">Todas as músicas, para ouvir com calma depois.</p>
+    <div class="player">
+      <iframe
+        src="https://open.spotify.com/embed/playlist/2tCktWMXFeq2Um3Gybs314"
+        width="100%" height="352" frameborder="0" loading="lazy"
+        title="Nossa playlist no Spotify"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+    </div>
+  </section>
+
+  <footer class="rodape">
+    <span class="rodape__coracao" aria-hidden="true">&#10084;</span>
+    <p id="rodapeTexto"></p>
+  </footer>
+
+</main>
+
+<!-- ==================== LIGHTBOX (um só, usado pelo calendário e pela galeria) ==================== -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto ampliada" hidden>
+  <button type="button" class="lightbox__fechar" id="lbFechar" aria-label="Fechar">&times;</button>
+  <button type="button" class="lightbox__seta lightbox__seta--ant" id="lbAnterior" aria-label="Anterior">&lsaquo;</button>
+
+  <figure class="lightbox__figura">
+    <div class="lightbox__midia" id="lbMidia"></div>
+    <figcaption class="lightbox__legenda">
+      <span id="lbLegenda"></span>
+      <span class="lightbox__posicao" id="lbPosicao"></span>
+    </figcaption>
+  </figure>
+
+  <button type="button" class="lightbox__seta lightbox__seta--prox" id="lbProximo" aria-label="Próxima">&rsaquo;</button>
+</div>
+
+<script src="data/momentos.js"></script>
+<script src="js/lightbox.js"></script>
+<script src="js/contador.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/calendario.js"></script>
+<script src="js/galeria.js"></script>
+<script src="js/trilha.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
