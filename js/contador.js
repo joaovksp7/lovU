@@ -1,16 +1,19 @@
 /* ==========================================================================
    contador.js — quanto tempo faz, ao vivo.
-   Mês em JS começa no 0: 9 = outubro, 4 = maio.
-   As duas datas nascem à meia-noite local, então a contagem de dias não
-   oscila com fuso nem com horário de verão.
+   Mês em JS começa no 0: 4 = maio.
+   A data nasce à meia-noite local, então a contagem de dias não oscila com
+   fuso nem com horário de verão.
+
+   O contador de "desde que a gente conversa" saiu por ora — o começo da
+   história agora é contado pela timeline e pelo calendário, que sabem de
+   mais dias do que uma data só.
    ========================================================================== */
 (function () {
   "use strict";
 
-  var INICIO_CONVERSA = new Date(2025, 9, 13);   // 13/10/2025
-  var INICIO_NAMORO   = new Date(2026, 4, 22);   // 22/05/2026  (data principal)
+  var INICIO_NAMORO = new Date(2026, 4, 22);   // 22/05/2026  (data principal)
 
-  var elConversa, elNamoro, elDetalhe, elRelogio;
+  var elNamoro, elDetalhe, elRelogio;
 
   /* Conta dias comparando só as datas (sem horas). O Math.round absorve a
      hora que o horário de verão tira ou põe no meio do caminho. */
@@ -60,9 +63,8 @@
   function atualizar() {
     var agora = new Date();
 
-    elConversa.textContent = diasEntre(INICIO_CONVERSA, agora).toLocaleString("pt-BR");
-    elNamoro.textContent   = diasEntre(INICIO_NAMORO, agora).toLocaleString("pt-BR");
-    elDetalhe.textContent  = "ou seja, " + frasear(detalhar(INICIO_NAMORO, agora));
+    elNamoro.textContent  = diasEntre(INICIO_NAMORO, agora).toLocaleString("pt-BR");
+    elDetalhe.textContent = "ou seja, " + frasear(detalhar(INICIO_NAMORO, agora));
 
     // como as datas começam à meia-noite, o tempo do dia corrente é o relógio
     elRelogio.textContent =
@@ -72,12 +74,11 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    elConversa = document.getElementById("diasConversa");
-    elNamoro   = document.getElementById("diasNamoro");
-    elDetalhe  = document.getElementById("detalheNamoro");
-    elRelogio  = document.getElementById("relogioVivo");
+    elNamoro  = document.getElementById("diasNamoro");
+    elDetalhe = document.getElementById("detalheNamoro");
+    elRelogio = document.getElementById("relogioVivo");
 
-    if (!elConversa || !elNamoro) return;
+    if (!elNamoro) return;
 
     atualizar();
     setInterval(atualizar, 1000);

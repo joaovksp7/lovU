@@ -39,7 +39,9 @@ const fotos = [
   "foto-061", "foto-062", "foto-063", "foto-064", "foto-065", "foto-066",
   "foto-067", "foto-068", "foto-069", "foto-070", "foto-071", "foto-072",
   "foto-073", "foto-074", "foto-075", "foto-076", "foto-077", "foto-078",
-  "foto-079", "foto-080", "foto-081", "foto-082",
+  "foto-079", "foto-080", "foto-081", "foto-082", "foto-083", "foto-084",
+  "foto-085", "foto-086", "foto-087", "foto-088", "foto-089", "foto-090",
+  "foto-091", "foto-092", "foto-093", "foto-094",
   "video-001"
 ];
 
@@ -56,8 +58,38 @@ const fotos = [
    certos — e vá acrescentando os outros dias com calma, um de cada vez.
    -------------------------------------------------------------------------- */
 const fotosPorDia = {
-  "2025-10-13": ["foto-001"],
+  "2024-10-13": ["foto-092"],
+  "2024-10-18": ["foto-093", "foto-094"],
+  "2025-04-18": ["foto-083"],
+  "2025-10-13": ["foto-084"],
+  "2025-10-26": ["foto-085"],
+  "2025-12-15": ["foto-086"],
+  "2025-12-25": ["foto-087", "foto-088"],
+  "2025-12-26": ["foto-089"],
   "2026-05-22": ["foto-002"]
+};
+
+/* --------------------------------------------------------------------------
+   3b. O recado de cada dia — o que você escreveria no verso da foto.
+
+   Um dia que tenha frase aqui também acende no calendário, MESMO SEM FOTO:
+   é assim que entram os dias de que não sobrou imagem nenhuma. Se o dia tiver
+   foto, a frase vira a legenda dela; se não tiver, ela aparece sozinha logo
+   abaixo do calendário.
+
+   As chaves são as mesmas do `fotosPorDia` — AAAA-MM-DD.
+   -------------------------------------------------------------------------- */
+const frasesPorDia = {
+  "2024-09-18": "Nosso primeiro contato no Viva Unisc, dia que te conheci pessoalmente.",
+  "2024-10-06": "Nossas primeiras mensagens. Período sensível, mas as primeiras ações.",
+  "2024-10-13": "Nossa primeira foto juntos.",
+  "2024-10-18": "Primeira vez comendo red.",
+  "2025-04-18": "Dia do sushi. Já não tinha mais a incerteza de sair da cidade e minha esperança reacendeu.",
+  "2025-10-13": "Dia especial voltando a nos falar, e encontrei essa foto na galeria.",
+  "2025-10-26": "Baita dia de Oktober, lembra dessa foto?",
+  "2025-12-15": "Dia de piscina.",
+  "2025-12-25": "Merry Christmas!",
+  "2025-12-26": "Festa pré-praia e o melhor expediente não remunerado que já tive."
 };
 
 /* --------------------------------------------------------------------------
@@ -66,10 +98,59 @@ const fotosPorDia = {
    -------------------------------------------------------------------------- */
 const timeline = [
   {
+    data: "2024-09-18",
+    titulo: "O primeiro contato",
+    descricao: "Nosso primeiro contato no Viva Unisc, dia que te conheci pessoalmente."
+  },
+  {
+    data: "2024-10-06",
+    titulo: "As primeiras mensagens",
+    descricao: "Período sensível, mas as primeiras ações."
+  },
+  {
+    data: "2024-10-13",
+    titulo: "A primeira foto juntos",
+    foto: "foto-092"
+  },
+  {
+    data: "2024-10-18",
+    titulo: "O primeiro red rs",
+    descricao: "Eu gosto muito desse dia e dessas fotos.",
+    foto: "foto-093"
+  },
+  {
+    data: "2025-04-18",
+    titulo: "O dia do sushi",
+    descricao: "Já não tinha mais a incerteza de sair da cidade e minha esperança reacendeu.",
+    foto: "foto-083"
+  },
+  {
     data: "2025-10-13",
-    titulo: "O primeiro oi",
-    descricao: "O dia em que a gente começou a conversar e nem imaginava onde isso ia dar.",
-    foto: "foto-001"
+    titulo: "Voltamos a nos falar",
+    descricao: "Dia especial voltando a nos falar, e encontrei essa foto na galeria.",
+    foto: "foto-084"
+  },
+  {
+    data: "2025-10-26",
+    titulo: "Oktoberfest",
+    descricao: "Baita dia de Oktober, lembra dessa foto?",
+    foto: "foto-085"
+  },
+  {
+    data: "2025-12-15",
+    titulo: "Dia de piscina",
+    foto: "foto-086"
+  },
+  {
+    data: "2025-12-25",
+    titulo: "Merry Christmas!",
+    foto: "foto-087"
+  },
+  {
+    data: "2025-12-26",
+    titulo: "Festa pré-praia",
+    descricao: "A festa pré-praia e o melhor expediente não remunerado que já tive.",
+    foto: "foto-089"
   },
   {
     data: "2026-05-22",

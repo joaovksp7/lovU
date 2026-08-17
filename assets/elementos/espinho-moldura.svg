@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" preserveAspectRatio="none" role="img" aria-label="Moldura de espinhos sombria com centro escuro">
+  <defs>
+    <radialGradient id="centro" cx="0.5" cy="0.5" r="0.62">
+      <stop offset="0" stop-color="#020205"></stop>
+      <stop offset="0.55" stop-color="#0b0c11"></stop>
+      <stop offset="1" stop-color="#161821"></stop>
+    </radialGradient>
+    <linearGradient id="ramo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a362e"></stop>
+      <stop offset="1" stop-color="#12100b"></stop>
+    </linearGradient>
+    <linearGradient id="pua" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6f6a63"></stop>
+      <stop offset="1" stop-color="#171512"></stop>
+    </linearGradient>
+  </defs>
+
+  
+  <rect x="3" y="3" width="94" height="94" rx="12" fill="url(#centro)"></rect>
+  <rect x="3" y="3" width="94" height="94" rx="12" fill="none" stroke="#26241d" stroke-width="1" opacity="0.7"></rect>
+
+  
+  <g fill="url(#pua)" stroke="#0b0a08" stroke-width="0.6" stroke-linejoin="round">
+    
+    <path d="M24 6 L20 -2 L30 3 Z"></path>
+    <path d="M50 5 L50 -4 L57 3 Z"></path>
+    <path d="M74 6 L80 -2 L70 3 Z"></path>
+    
+    <path d="M94 24 L102 20 L97 30 Z"></path>
+    <path d="M95 50 L104 50 L97 57 Z"></path>
+    <path d="M94 76 L102 80 L97 70 Z"></path>
+    
+    <path d="M24 94 L20 102 L30 97 Z"></path>
+    <path d="M50 95 L50 104 L43 97 Z"></path>
+    <path d="M76 94 L80 102 L70 97 Z"></path>
+    
+    <path d="M6 24 L-2 20 L3 30 Z"></path>
+    <path d="M5 50 L-4 50 L3 43 Z"></path>
+    <path d="M6 76 L-2 80 L3 70 Z"></path>
+  </g>
+
+  
+  <rect x="6" y="6" width="88" height="88" rx="14" fill="none" stroke="url(#ramo)" stroke-width="4.5" stroke-linejoin="round"></rect>
+  <rect x="6" y="6" width="88" height="88" rx="14" fill="none" stroke="#5b5346" stroke-width="0.9" opacity="0.35" stroke-linejoin="round"></rect>
+
+  
+  <g fill="url(#pua)" stroke="#0b0a08" stroke-width="0.4" stroke-linejoin="round" opacity="0.9">
+    <path d="M13 40 L7 44 L9 37 Z"></path>
+    <path d="M40 13 L44 7 L46 14 Z"></path>
+    <path d="M87 60 L93 56 L91 63 Z"></path>
+    <path d="M60 87 L56 93 L54 86 Z"></path>
+  </g>
+
+  
+  <path d="M83 17 C79 13 74 16 76 21 C78 25 85 24 87 19 C88 16 86 14 83 17 Z" fill="#14100f" stroke="#050404" stroke-width="0.7"></path>
+  <path d="M79 17 C81 15 84 16 84.5 18.5" fill="none" stroke="#4b453c" stroke-width="0.8" opacity="0.6" stroke-linecap="round"></path>
+</svg>

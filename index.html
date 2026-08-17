@@ -21,14 +21,17 @@
 <!-- ==================== TELA DE ENTRADA ==================== -->
 <div class="entrada" id="entrada">
 
-  <!-- O céu da entrada. As estrelas e a lua são CSS; a roseira e a
-       estrela-do-mar são os desenhos de assets/elementos, cada um numa pose.
+  <!-- O céu da entrada. As estrelas, a lua e as nuvens são CSS; as
+       estrelas-do-mar são o desenho de assets/elementos, cada uma numa pose.
        Tudo aqui é decoração: o bloco inteiro é aria-hidden. -->
   <div class="entrada__ceu" aria-hidden="true">
     <span class="lua"></span>
-    <span class="enfeite enfeite--rosas-baixo-esq"></span>
-    <span class="enfeite enfeite--rosas-cima-dir"></span>
+    <span class="nuvem nuvem--entrada-1"></span>
+    <span class="nuvem nuvem--entrada-2 nuvem--densa"></span>
+    <span class="enfeite enfeite--estrela-baixo-esq"></span>
     <span class="enfeite enfeite--estrela-baixo-dir"></span>
+    <span class="enfeite enfeite--estrela-cima-dir"></span>
+    <span class="enfeite enfeite--estrela-meio-esq"></span>
   </div>
 
   <div class="entrada__conteudo">
@@ -42,6 +45,26 @@
 </div>
 
 <main class="conteudo" id="conteudo">
+
+  <!-- ==================== TOPO: A LUA, AS NUVENS E O MAR ====================
+       A primeira coisa depois do clique, e só desenho — daí o aria-hidden no
+       bloco inteiro. A lua cheia entre as nuvens lá em cima, as ondas fechando
+       embaixo, e duas estrelas-do-mar pousadas na crista. -->
+  <div class="topo" aria-hidden="true">
+    <span class="lua lua--topo"></span>
+    <span class="nuvem nuvem--topo-1"></span>
+    <span class="nuvem nuvem--topo-2"></span>
+    <span class="nuvem nuvem--topo-3 nuvem--densa"></span>
+
+    <div class="mar">
+      <span class="mar__onda mar__onda--fundo"></span>
+      <span class="mar__onda mar__onda--meio"></span>
+      <span class="mar__onda mar__onda--frente"></span>
+    </div>
+
+    <span class="enfeite enfeite--estrela-mar-esq"></span>
+    <span class="enfeite enfeite--estrela-mar-dir"></span>
+  </div>
 
   <!-- ==================== TRILHA ====================
        Nasce escondida: quem a mostra é o js/trilha.js, depois de sortear a
@@ -76,13 +99,6 @@
     <p class="secao__linha"></p>
 
     <div class="contador">
-      <article class="cartao">
-        <span class="cartao__rotulo">Recap</span>
-        <strong class="cartao__numero" id="diasConversa">—</strong>
-        <span class="cartao__unidade">dias</span>
-        <span class="cartao__desde">desde 13 de outubro de 2025</span>
-      </article>
-
       <article class="cartao cartao--principal">
         <span class="coracao-pulsa" aria-hidden="true"></span>
         <span class="cartao__rotulo">Namoro</span>
@@ -106,7 +122,7 @@
   <!-- ==================== CALENDÁRIO ==================== -->
   <section class="secao" id="secaoCalendario" data-revelar>
     <h2 class="secao__titulo">Nosso calendário</h2>
-    <p class="secao__subtitulo">Os dias marcados com um coração têm foto. Toca para ver.</p>
+    <p class="secao__subtitulo">Os dias marcados guardam alguma coisa nossa. Toca para ver.</p>
 
     <div class="cal">
       <header class="cal__topo">
@@ -120,6 +136,9 @@
       </div>
 
       <div class="cal__grade" id="calGrade"></div>
+
+      <!-- o recado dos dias sem foto; fica escondido até ela tocar num deles -->
+      <p class="cal__recado" id="calRecado" role="status" hidden></p>
     </div>
   </section>
 

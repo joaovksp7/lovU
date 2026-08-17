@@ -1,15 +1,16 @@
 /* ==========================================================================
    Nosso Namoro — folha de estilo única.
-   Estética: azul-marinho (o céu e o mar, com estrelas, lua e estrelas-do-mar)
-   e vermelho vinho (as rosas, os espinhos e as folhas).
-   Ordem: tokens → base → céu → tela de entrada → seções → enfeites → contador
-          → timeline → calendário → galeria → lightbox → trilha → player
-          → rodapé → responsivo.
+   Estética: azul-marinho de ponta a ponta — o céu com a lua e as nuvens lá em
+   cima, o mar com as ondas e as estrelas-do-mar daí para baixo.
+   Ordem: tokens → base → céu → tela de entrada → topo do conteúdo → seções
+          → enfeites → contador → timeline → calendário → galeria → lightbox
+          → trilha → player → rodapé → responsivo.
    Regra do projeto: usar sempre os tokens do :root, nunca hex solto.
 
-   A decoração toda sai de dois desenhos em assets/elementos/, repetidos de
-   seção em seção: o ramo de rosas e a estrela-do-mar. É sempre a mesma
-   imagem — o que muda a cada aparição é tamanho, giro e transparência.
+   A decoração sai de um único desenho em assets/elementos/ — a estrela-do-mar,
+   repetida de seção em seção — mais as ondas, as nuvens e a lua, que são
+   feitas aqui mesmo. É sempre a mesma estrela: o que muda a cada aparição é
+   tamanho, giro e transparência.
    ========================================================================== */
 
 /* ------------------------------- 1. TOKENS ------------------------------- */
@@ -24,7 +25,7 @@
   --luar:          #E8EFFC;
   --estrela:       #F2D9A0;
 
-  /* as rosas, os espinhos e as folhas */
+  /* o vermelho vinho que aquece o azul */
   --vinho:        #7E1E32;
   --vinho-claro:  #A83A51;
   --vinho-escuro: #4E0F1E;
@@ -40,6 +41,9 @@
   --brilho-estrela:       rgba(232, 239, 252, .95);
   --brilho-estrela-fraco: rgba(232, 239, 252, .55);
   --brilho-lua:           rgba(242, 217, 160, .30);
+  --nuvem:                rgba(232, 239, 252, .13);
+  --nuvem-densa:          rgba(232, 239, 252, .20);
+  --espuma:               rgba(124, 155, 207, .34);
   --vidro:                rgba(232, 239, 252, .12);
   --vidro-forte:          rgba(232, 239, 252, .26);
   --veu:                  rgba(4, 12, 28, .94);
@@ -63,15 +67,21 @@
   --serif: "Playfair Display", Georgia, serif;
   --sans:  "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  /* Os dois desenhos. Caminho relativo a esta folha (css/), e é aqui — e só
-     aqui — que ele aparece: trocar o arquivo é mexer nestas duas linhas.
-     rosas-recorte.png é o rosas.png com o fundo branco removido; o original
-     continua na pasta, intocado. */
-  --rosas:       url("../assets/elementos/rosas-recorte.png");
+  /* O desenho. Caminho relativo a esta folha (css/), e é aqui — e só aqui —
+     que ele aparece: trocar o arquivo é mexer nesta linha. */
   --estrela-mar: url("../assets/elementos/estrela-do-mar.webp");
 
-  /* proporção dos arquivos, para a altura dos enfeites sair sozinha */
-  --rosas-proporcao: 900 / 550;
+  /* A moldura de espinhos do calendário — o desenho do tempo em que a gente
+     não se falou. Mesma regra da estrela: o caminho mora só aqui. */
+  --espinho-moldura: url("../assets/elementos/espinho-moldura.svg");
+
+  /* As duas ondas: desenhos vetoriais embutidos em `data:`, sem arquivo e sem
+     requisição nenhuma. Entram sempre como MÁSCARA, nunca como imagem — assim
+     a cor continua saindo dos tokens acima, e não de dentro do SVG.
+     --onda-linha é o traço que divide as seções; --onda-mar é a crista cheia
+     que se repete de lado a lado. */
+  --onda-linha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 40' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23fff' stroke-linecap='round'%3E%3Cpath d='M20 10q20-8 40 0t40 0 40 0 40 0 40 0 40 0' stroke-width='2.2' opacity='.5'/%3E%3Cpath d='M4 22q24-10 48 0t48 0 48 0 48 0 48 0 48 0' stroke-width='3'/%3E%3Cpath d='M60 33q15-7 30 0t30 0 30 0 30 0 30 0' stroke-width='2' opacity='.38'/%3E%3C/g%3E%3C/svg%3E");
+  --onda-mar:   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 60' preserveAspectRatio='none'%3E%3Cpath fill='%23fff' d='M0 30q75-26 150 0t150 0 150 0 150 0V60H0Z'/%3E%3C/svg%3E");
 }
 
 /* -------------------------------- 2. BASE -------------------------------- */
@@ -267,13 +277,58 @@ body::after {
 .lua {
   position: absolute;
   top: 8%;
-  left: 9%;      /* à esquerda: o canto direito é do ramo de rosas */
+  left: 9%;
   width: 78px;
   height: 78px;
   border-radius: 50%;
   box-shadow:
     inset -19px 5px 0 0 var(--estrela),
     0 0 52px 12px var(--brilho-lua);
+}
+
+/* As nuvens: um comprimido arredondado com dois montes por cima (os
+   pseudo-elementos). Translúcidas, para o céu e as estrelas continuarem
+   aparecendo por trás. Cada uma deriva devagar, no seu próprio compasso —
+   a `alternate` faz o vento ir e voltar em vez de saltar de volta ao início. */
+.nuvem {
+  position: absolute;
+  width: 130px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--nuvem);
+  animation: derivar 46s ease-in-out infinite alternate;
+}
+.nuvem::before,
+.nuvem::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: inherit;
+}
+.nuvem::before { width: 56%; aspect-ratio: 1; left: 12%; bottom: 42%; }
+.nuvem::after  { width: 38%; aspect-ratio: 1; left: 52%; bottom: 55%; }
+
+/* a nuvem densa passa na frente e esconde um pedaço da lua */
+.nuvem--densa { background: var(--nuvem-densa); }
+
+/* as duas da tela de entrada: uma cruzando a lua, outra lá do outro lado */
+.nuvem--entrada-1 {
+  top: 6%;
+  left: 3%;
+  width: clamp(120px, 36vw, 200px);
+  animation-duration: 40s;
+}
+.nuvem--entrada-2 {
+  top: 21%;
+  right: 6%;
+  width: clamp(90px, 26vw, 160px);
+  animation-duration: 56s;
+  animation-delay: -14s;
+}
+
+@keyframes derivar {
+  from { transform: translateX(-4%); }
+  to   { transform: translateX(4%); }
 }
 
 /* `width` e não `max-width`: num item centralizado (fit-content) a
@@ -365,6 +420,105 @@ body::after {
 .com-js .conteudo--visivel { opacity: 1; }
 .sem-js .entrada { display: none; }
 
+/* ------------- 4B. O TOPO DO CONTEÚDO: A LUA, AS NUVENS E O MAR -------------
+   A primeira coisa depois do clique. É só desenho (o bloco todo é
+   aria-hidden): a lua cheia entre nuvens lá no alto, e embaixo as ondas
+   fechando a faixa — daí para baixo a página inteira acontece no mar.
+   `overflow: hidden` é o que apara as nuvens e as ondas que passam da borda. */
+.topo {
+  position: relative;
+  height: clamp(170px, 42vw, 300px);
+  overflow: hidden;
+}
+
+/* a lua daqui é cheia, não é a foice da entrada: o `inset` some e fica só o
+   disco aceso com o halo em volta */
+.lua--topo {
+  top: 16%;
+  left: 50%;
+  width: clamp(64px, 15vw, 104px);
+  height: auto;
+  aspect-ratio: 1;
+  background: var(--estrela);
+  transform: translateX(-50%);
+  box-shadow: 0 0 60px 16px var(--brilho-lua);
+}
+
+.nuvem--topo-1 { top: 14%; left: 4%;  width: clamp(120px, 34vw, 210px); animation-duration: 52s; }
+.nuvem--topo-2 { top: 30%; right: 2%; width: clamp(100px, 28vw, 180px); animation-duration: 64s; animation-delay: -18s; }
+/* esta cruza por cima da lua, e por isso é a densa */
+.nuvem--topo-3 {
+  top: 26%;
+  left: 50%;
+  width: clamp(90px, 24vw, 150px);
+  margin-left: -12%;
+  animation-duration: 38s;
+  animation-delay: -9s;
+}
+
+/* --- o mar: três cristas em profundidades diferentes ---------------------
+   Cada onda é um bloco mais largo que a faixa, mascarado pela crista repetida.
+   `--passo` é o segredo do laço: ele é ao mesmo tempo a largura de UMA
+   repetição da máscara e o quanto a animação anda. Andando exatamente uma
+   repetição, o quadro final é idêntico ao primeiro e a volta não tem emenda.
+   Mexer no passo muda quantas ondas cabem na tela — e só nele.
+
+   Os degradês morrem em transparente de propósito: a faixa não pode ter fundo
+   sólido, senão o pé dela vira um risco reto contra o azul da página. */
+.mar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: clamp(56px, 14vw, 92px);
+}
+
+.mar__onda {
+  --passo: 25%;   /* 4 repetições no bloco = 2 ondas por tela */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 400%;
+  -webkit-mask-image: var(--onda-mar);
+          mask-image: var(--onda-mar);
+  -webkit-mask-size: var(--passo) 100%;
+          mask-size: var(--passo) 100%;
+  -webkit-mask-repeat: repeat-x;
+          mask-repeat: repeat-x;
+  animation: mar-anda 17s linear infinite;
+}
+
+.mar__onda--fundo {
+  height: 100%;
+  background: linear-gradient(180deg, var(--espuma), transparent 88%);
+  opacity: .62;
+  animation-duration: 23s;
+  animation-direction: reverse;
+}
+
+.mar__onda--meio {
+  height: 76%;
+  background: linear-gradient(180deg, var(--azul-luar), transparent 82%);
+  opacity: .34;
+  animation-duration: 17s;
+}
+
+.mar__onda--frente {
+  height: 52%;
+  background: linear-gradient(180deg, var(--luar), var(--azul-luar) 55%, transparent);
+  opacity: .24;
+  animation-duration: 12s;
+  animation-direction: reverse;
+}
+
+@keyframes mar-anda {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(var(--passo) * -1)); }
+}
+
+/* As duas estrelas pousadas na crista ficam com as outras, lá no bloco 6 —
+   é lá que mora a pose de toda estrela solta da página. */
+
 /* ------------------------------- 5. SEÇÕES ------------------------------- */
 .secao {
   position: relative;   /* âncora dos enfeites de canto */
@@ -387,19 +541,28 @@ body::after {
   margin-bottom: 2.2rem;
 }
 
-/* o divisor é o próprio ramo de rosas, com um fio de luar em volta para
-   descolar a silhueta preta do azul */
+/* O divisor é uma onda: o degradê é que dá a cor, a máscara é que dá o
+   formato, e o brilho descola o traço fino do azul do fundo. Como o desenho
+   é vetorial, ele estica até a largura que a seção pedir sem borrar. */
 .secao__linha {
   width: clamp(180px, 48vw, 280px);
-  aspect-ratio: var(--rosas-proporcao);
+  height: clamp(26px, 7vw, 38px);
   margin: 0 auto 1.2rem;
-  background: var(--rosas) center / contain no-repeat;
+  background: linear-gradient(90deg,
+    transparent, var(--azul-luar) 16%, var(--luar) 50%, var(--azul-luar) 84%, transparent);
+  -webkit-mask-image: var(--onda-linha);
+          mask-image: var(--onda-linha);
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  opacity: .8;
   filter: drop-shadow(0 0 10px var(--brilho-lua));
 }
 
-/* o segundo divisor da página não pode parecer carimbo do primeiro:
-   entra espelhado e torto (secao par = a da timeline) */
-.secao:nth-of-type(even) .secao__linha { transform: rotate(-3deg) scaleX(-1); }
+/* o segundo divisor da página não pode parecer carimbo do primeiro: a onda
+   entra espelhada (secao par = a da timeline) */
+.secao:nth-of-type(even) .secao__linha { transform: scaleX(-1); }
 
 /* revelação ao rolar */
 .com-js [data-revelar] { opacity: 0; transform: translateY(26px); }
@@ -409,13 +572,13 @@ body::after {
   transition: opacity 700ms ease, transform 700ms cubic-bezier(.22, .61, .36, 1);
 }
 
-/* ------------------------ 6. ENFEITES ESPALHADOS -------------------------
-   Toda seção recebe dois enfeites pelos seus pseudo-elementos: o ::before é
-   sempre o ramo de rosas, o ::after é sempre a estrela-do-mar. O que muda de
-   uma seção para a outra é a pose — canto, tamanho, giro e transparência.
+/* ------------------------ 6. ESTRELAS-DO-MAR ESPALHADAS -------------------
+   Toda seção recebe DUAS estrelas-do-mar pelos seus pseudo-elementos, uma em
+   cada canto. É sempre o mesmo desenho: o que muda de uma seção para a outra é
+   a pose — canto, tamanho, giro e transparência. Nenhuma cai igual à outra.
 
-   z-index: -1 põe os dois atrás do conteúdo. Como a .secao é `relative` mas
-   sem z-index próprio, ela não cria contexto de empilhamento e os enfeites
+   z-index: -1 põe as duas atrás do conteúdo. Como a .secao é `relative` mas
+   sem z-index próprio, ela não cria contexto de empilhamento e as estrelas
    caem atrás de todo o texto da página, sem nunca cobrir nada. */
 .secao::before,
 .secao::after { content: ""; }
@@ -426,45 +589,34 @@ body::after {
   position: absolute;
   z-index: -1;
   pointer-events: none;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-}
-
-.secao::before {
-  background-image: var(--rosas);
-  aspect-ratio: var(--rosas-proporcao);
-  opacity: .26;
-}
-
-.secao::after {
-  background-image: var(--estrela-mar);
   aspect-ratio: 1;
-  opacity: .5;
+  background: var(--estrela-mar) center / contain no-repeat;
+  opacity: .45;
 }
 
-/* --- contador: roseira entrando pela esquerda, estrela caída à direita --- */
+/* --- contador: uma grande deitada à esquerda, uma miúda à direita --- */
 #secaoContador::before {
-  width: clamp(190px, 40vw, 380px);
-  top: -3%;
-  left: -7%;
-  transform: rotate(-14deg);
-  opacity: .24;
+  width: clamp(66px, 15vw, 122px);
+  top: 3%;
+  left: 3%;
+  transform: rotate(-19deg);
+  opacity: .38;
 }
 #secaoContador::after {
   width: clamp(46px, 10vw, 84px);
   bottom: 6%;
   right: 4%;
   transform: rotate(34deg);
+  opacity: .5;
 }
 
-/* --- timeline: a mesma roseira espelhada, agora subindo pelo rodapé --- */
+/* --- timeline --- */
 #secaoTimeline::before {
-  width: clamp(200px, 42vw, 400px);
-  bottom: 1%;
-  left: -9%;
-  transform: rotate(12deg) scaleX(-1);
-  opacity: .22;
+  width: clamp(58px, 13vw, 104px);
+  bottom: 4%;
+  left: 4%;
+  transform: rotate(63deg);
+  opacity: .34;
 }
 #secaoTimeline::after {
   width: clamp(44px, 9vw, 78px);
@@ -474,86 +626,109 @@ body::after {
   opacity: .45;
 }
 
-/* --- calendário: roseira de cabeça para baixo no alto da direita --- */
+/* --- calendário --- */
 #secaoCalendario::before {
-  width: clamp(180px, 38vw, 360px);
-  top: 2%;
-  right: -8%;
-  transform: rotate(168deg);
-  opacity: .24;
+  width: clamp(60px, 14vw, 110px);
+  top: 4%;
+  right: 3%;
+  transform: rotate(11deg);
+  opacity: .36;
 }
 #secaoCalendario::after {
   width: clamp(48px, 10vw, 86px);
   bottom: 7%;
   left: 4%;
   transform: rotate(-30deg);
+  opacity: .5;
 }
 
-/* --- galeria: enfeites mais apagados, que aqui o conteúdo é denso --- */
+/* --- galeria: mais apagadas, que aqui o conteúdo é denso --- */
 #secaoGaleria::before {
-  width: clamp(190px, 40vw, 380px);
-  bottom: -2%;
-  right: -7%;
-  transform: rotate(-8deg) scaleX(-1);
-  opacity: .18;
+  width: clamp(56px, 12vw, 96px);
+  bottom: 3%;
+  right: 3%;
+  transform: rotate(-51deg);
+  opacity: .3;
 }
 #secaoGaleria::after {
   width: clamp(44px, 9vw, 76px);
   top: 4%;
   left: 3%;
   transform: rotate(42deg);
-  opacity: .45;
+  opacity: .38;
 }
 
 /* --- playlist --- */
 #secaoMusica::before {
-  width: clamp(180px, 38vw, 350px);
-  top: 4%;
-  left: -6%;
-  transform: rotate(-170deg);
-  opacity: .22;
+  width: clamp(58px, 13vw, 100px);
+  top: 5%;
+  left: 4%;
+  transform: rotate(-72deg);
+  opacity: .34;
 }
 #secaoMusica::after {
   width: clamp(50px, 10vw, 88px);
   bottom: 4%;
   right: 5%;
   transform: rotate(18deg);
+  opacity: .48;
 }
 
-/* --- os enfeites da tela de entrada, que são <span> e não pseudo:
-       lá os dois pseudo-elementos já são as estrelas do céu --- */
+/* --- as estrelas soltas em <span>, e não em pseudo-elemento: são as da tela
+       de entrada e as do topo, onde os dois pseudos já têm dono --- */
 .enfeite { display: block; }
 
-.enfeite--rosas-baixo-esq,
-.enfeite--rosas-cima-dir {
-  background-image: var(--rosas);
-  aspect-ratio: var(--rosas-proporcao);
-}
-
-.enfeite--rosas-baixo-esq {
-  width: clamp(240px, 64vw, 460px);
-  left: -8%;
-  bottom: -4%;
-  transform: rotate(-6deg);
+.enfeite--estrela-baixo-esq {
+  width: clamp(60px, 15vw, 116px);
+  left: 8%;
+  bottom: 9%;
+  transform: rotate(-16deg);
   opacity: .5;
 }
 
-.enfeite--rosas-cima-dir {
-  width: clamp(180px, 48vw, 380px);
-  right: -10%;
-  top: -3%;
-  transform: rotate(176deg);
-  opacity: .32;
-}
-
 .enfeite--estrela-baixo-dir {
-  background-image: var(--estrela-mar);
-  aspect-ratio: 1;
   width: clamp(54px, 13vw, 100px);
   right: 9%;
   bottom: 13%;
   transform: rotate(28deg);
   opacity: .55;
+}
+
+.enfeite--estrela-cima-dir {
+  width: clamp(40px, 10vw, 74px);
+  right: 12%;
+  top: 9%;
+  transform: rotate(57deg);
+  opacity: .34;
+}
+
+.enfeite--estrela-meio-esq {
+  width: clamp(32px, 8vw, 58px);
+  left: 15%;
+  top: 34%;
+  transform: rotate(-44deg);
+  opacity: .28;
+}
+
+/* as duas do topo pousam na crista da onda: precisam vir para a FRENTE dela,
+   e por isso são as únicas que fogem do z-index negativo lá de cima */
+.enfeite--estrela-mar-esq,
+.enfeite--estrela-mar-dir { z-index: 1; }
+
+.enfeite--estrela-mar-esq {
+  width: clamp(38px, 9vw, 62px);
+  left: 13%;
+  bottom: 3%;
+  transform: rotate(-27deg);
+  opacity: .6;
+}
+
+.enfeite--estrela-mar-dir {
+  width: clamp(30px, 7vw, 50px);
+  right: 16%;
+  bottom: 9%;
+  transform: rotate(41deg);
+  opacity: .45;
 }
 
 /* ------------------------------ 7. CONTADOR ------------------------------ */
@@ -562,7 +737,8 @@ body::after {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   /* folga suficiente para o coraçãozinho não encostar no cartão de cima */
   gap: 2.25rem 1.25rem;
-  max-width: 720px;
+  /* hoje é um cartão só; se voltar a ser dois, isto vira 720px de novo */
+  max-width: 380px;
   margin: 0 auto;
 }
 
@@ -740,7 +916,11 @@ body::after {
   border: 1px solid var(--borda);
   border-radius: var(--raio);
   box-shadow: var(--sombra);
+  transition: filter var(--transicao);
 }
+
+/* mês inteirinho dentro do período de espinhos: o calendário perde a cor */
+.cal--sombrio { filter: grayscale(1); }
 
 .cal__topo {
   display: flex;
@@ -814,6 +994,58 @@ body::after {
   transform: scale(1.08);
 }
 
+/* dia sem foto, mas com recado: o mesmo destaque, só que vazado — dá para
+   ver de longe que ali tem alguma coisa, e que não é uma foto */
+.cal__dia--so-frase {
+  background: transparent;
+  border: 1px solid var(--borda-vinho);
+  color: var(--petala);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transicao), transform var(--transicao);
+}
+.cal__dia--so-frase:hover {
+  background: var(--vidro);
+  transform: scale(1.08);
+}
+
+/* o tempo em que a gente não se falou — cada dia do período usa a moldura de
+   espinhos. Estas regras vêm DEPOIS das de cima de propósito: é o
+   `background-image` daqui que apaga o gradiente vinho dos poucos dias
+   marcados que caíram dentro do período. */
+.cal__dia--espinho,
+.cal__dia--espinho:hover {
+  background-image: var(--espinho-moldura);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  color: var(--texto-suave);
+}
+
+/* dia marcado dentro do período: o número clareia para se ler sobre o escuro */
+.cal__dia--espinho.cal__dia--tem-foto,
+.cal__dia--espinho.cal__dia--so-frase { color: var(--luar); }
+
+/* o recado propriamente dito, abaixo da grade */
+.cal__recado {
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--borda);
+  font-size: .95rem;
+  line-height: 1.6;
+  color: var(--luar);
+  text-align: center;
+}
+
+.cal__recado-data {
+  display: block;
+  margin-bottom: .3rem;
+  font-size: .78rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--petala);
+}
+
 /* a marca do dia com foto é a estrela-do-mar em miniatura; o brilho a
    descola do vinho da célula */
 .cal__dia--tem-foto::after {
@@ -859,7 +1091,7 @@ body::after {
 .galeria__item:hover img { transform: scale(1.07); }
 
 /* o vídeo não tem miniatura gerada (não há ffmpeg): entra como card com play,
-   e no lugar da imagem que falta vai a roseira */
+   e no lugar da imagem que falta vai uma estrela-do-mar grande */
 .galeria__video {
   position: relative;
   display: grid;
@@ -874,12 +1106,12 @@ body::after {
 .galeria__video::before {
   content: "";
   position: absolute;
-  inset: -12% -16%;
-  background: var(--rosas) center / contain no-repeat;
-  transform: rotate(-10deg);
-  opacity: .32;
+  inset: 8%;
+  background: var(--estrela-mar) center / contain no-repeat;
+  transform: rotate(-14deg);
+  opacity: .34;
 }
-/* sobem para cima da roseira */
+/* sobem para cima da estrela */
 .galeria__play,
 .galeria__rotulo { position: relative; z-index: 1; }
 
@@ -1043,9 +1275,9 @@ body::after {
 .player iframe { display: block; border-radius: 12px; }
 
 /* ------------------------------- 14. RODAPÉ ------------------------------- */
-/* O fim da página é o fundo do mar: a roseira deitada ao fundo e três
-   estrelas-do-mar caídas em tamanhos e giros diferentes. Duas delas moram
-   nos pseudo-elementos do coraçãozinho, que estava sobrando. */
+/* O fim da página é o fundo do mar: uma última onda deitada rente à borda e
+   três estrelas-do-mar caídas em tamanhos e giros diferentes. Duas delas
+   moram nos pseudo-elementos do coraçãozinho, que estava sobrando. */
 .rodape {
   position: relative;
   padding: 3rem 1.25rem 4.5rem;
@@ -1069,24 +1301,32 @@ body::after {
   position: absolute;
   z-index: -1;
   pointer-events: none;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
 }
 
+.rodape::after,
+.rodape__coracao::before,
+.rodape__coracao::after {
+  aspect-ratio: 1;
+  background: var(--estrela-mar) center / contain no-repeat;
+}
+
+/* a onda que fecha a página, parada: aqui embaixo o mar já está calmo */
 .rodape::before {
-  background-image: var(--rosas);
-  aspect-ratio: var(--rosas-proporcao);
-  width: min(560px, 96%);
-  left: 50%;
-  bottom: -2%;
-  transform: translateX(-50%) rotate(2deg);
-  opacity: .3;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: clamp(40px, 10vw, 66px);
+  background: linear-gradient(180deg, var(--espuma), transparent 85%);
+  -webkit-mask-image: var(--onda-mar);
+          mask-image: var(--onda-mar);
+  -webkit-mask-size: clamp(200px, 50vw, 320px) 100%;
+          mask-size: clamp(200px, 50vw, 320px) 100%;
+  -webkit-mask-repeat: repeat-x;
+          mask-repeat: repeat-x;
+  opacity: .55;
 }
 
 .rodape::after {
-  background-image: var(--estrela-mar);
-  aspect-ratio: 1;
   width: clamp(58px, 15vw, 104px);
   left: 50%;
   bottom: .4rem;
@@ -1095,11 +1335,7 @@ body::after {
 }
 
 .rodape__coracao::before,
-.rodape__coracao::after {
-  background-image: var(--estrela-mar);
-  aspect-ratio: 1;
-  top: 50%;
-}
+.rodape__coracao::after { top: 50%; }
 /* subidas até a altura do coração: embaixo delas passa o texto do rodapé */
 .rodape__coracao::before {
   width: clamp(42px, 11vw, 72px);
@@ -1116,7 +1352,10 @@ body::after {
 
 /* ----------------------------- 15. RESPONSIVO ----------------------------- */
 @media (max-width: 720px) {
-  .lua {
+  /* a foice da entrada encolhe. O seletor precisa citar o céu da entrada: com
+     `.lua` puro esta regra viria depois — e por cima — da `.lua--topo`, e a
+     lua cheia do topo virava foice no celular. */
+  .entrada__ceu .lua {
     width: 56px;
     height: 56px;
     top: 7%;
@@ -1126,7 +1365,14 @@ body::after {
       0 0 38px 9px var(--brilho-lua);
   }
 
-  /* só a largura: a altura sai do aspect-ratio do desenho */
+  /* no celular as nuvens são mais baixas, senão viram mancha */
+  .nuvem { height: 26px; }
+
+  /* a tela é estreita: com o passo de 25% as ondas ficariam miúdas e agitadas.
+     Dobrado, cabe uma por tela — o mar continua calmo. Só o passo muda; a
+     máscara e a animação leem daqui. */
+  .mar__onda { --passo: 50%; width: 200%; }
+
   .secao__linha { width: clamp(150px, 44vw, 210px); }
 
   .trilha { padding: 1rem .7rem 0; }
@@ -1161,11 +1407,11 @@ body::after {
   .cal__dia { font-size: .82rem; }
   .cal__dia--tem-foto::after { width: 12px; height: 12px; }
 
-  /* Enfeites de canto mais discretos: a tela é estreita e o texto passa por
-     cima deles. Vai de `filter: opacity()` e não de `opacity` porque as
+  /* Estrelas de canto mais discretas: a tela é estreita e o texto passa por
+     cima delas. Vai de `filter: opacity()` e não de `opacity` porque as
      poses de cada seção são presas por id (#secaoContador etc.) e id ganha
      de classe em qualquer media query — o filtro multiplica em vez de
-     disputar. */
+     disputar. A onda do rodapé vem junto, pelo mesmo motivo. */
   .secao::before,
   .secao::after,
   .rodape::before { filter: opacity(.62); }
@@ -1183,7 +1429,8 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 
-  /* as estrelas param de cintilar e ficam acesas de uma vez só */
+  /* as estrelas param de cintilar e ficam acesas de uma vez só; as nuvens
+     param de derivar e o mar para de andar, cada um parado no seu lugar */
   *, *::before, *::after {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;

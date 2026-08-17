@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Inter:wght@300;400;500;600&display=swap">
+<script src="./image-slot.js"></script>
+<style>
+  html, body { margin:0; padding:0; }
+  body { background:#06122A; }
+  *, *::before, *::after { box-sizing:border-box; }
+  @keyframes twinkle { 0%,100%{opacity:.55} 50%{opacity:1} }
+  @keyframes twinkle2 { 0%,100%{opacity:.28} 50%{opacity:.8} }
+  @keyframes moonPulse {
+    0%,100% { box-shadow:0 0 90px 24px rgba(242,217,160,.26), 0 0 160px 60px rgba(124,155,207,.12); }
+    50%     { box-shadow:0 0 130px 40px rgba(242,217,160,.42), 0 0 220px 90px rgba(124,155,207,.18); }
+  }
+  @keyframes shimmer { 0%,100%{opacity:.35; transform:translateX(-50%) scaleY(1)} 50%{opacity:.6; transform:translateX(-50%) scaleY(1.12)} }
+  @keyframes floatStar {
+    0%   { transform:translateY(0) rotate(var(--r,0deg)); }
+    50%  { transform:translateY(-28px) rotate(calc(var(--r,0deg) + 10deg)); }
+    100% { transform:translateY(0) rotate(var(--r,0deg)); }
+  }
+  @keyframes sway { 0%,100%{transform:rotate(-7deg)} 50%{transform:rotate(7deg)} }
+  @keyframes waveMove { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  @keyframes bubble { 0%{transform:translateY(0) scale(.7);opacity:0} 12%{opacity:.55} 100%{transform:translateY(-160px) scale(1);opacity:0} }
+  @keyframes heartPulse { 0%,100%{transform:rotate(-45deg) scale(1)} 50%{transform:rotate(-45deg) scale(1.16)} }
+  @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+  @keyframes floatSlow { 0%,100%{transform:translateY(0)} 50%{transform:translateY(16px)} }
+  @keyframes eq { 0%,100%{height:5px} 50%{height:22px} }
+  @keyframes shootAcross {
+    0%   { transform:translate(0,0) rotate(38deg); opacity:0; }
+    10%  { opacity:1; }
+    100% { transform:translate(360px,282px) rotate(38deg); opacity:0; }
+  }
+  @keyframes riseIn { from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:none} }
+  image-slot { --slot-bg:#0f2447; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; }
+  }
+</style>
+</helmet>
+
+<div style="position:relative; overflow:hidden; font-family:'Inter',system-ui,sans-serif; color:#E8EFFC; font-weight:300; line-height:1.65; background:linear-gradient(180deg,#050d1f 0%,#0a1a38 9%,#12294e 18%,#1a3a63 26%,#154a76 31%,#0f3a63 37%,#0c2f54 46%,#0a2545 58%,#081d38 70%,#06182f 80%,#123152 87%,#5a5f52 91%,#a68a56 95%,#d8bf88 100%);">
+
+  <!-- ===================== CAMADAS DE PARALLAX (fixas) ===================== -->
+  <div ref="{{ r.stars }}" style="position:fixed; inset:0; z-index:0; pointer-events:none; will-change:transform,opacity;">
+    <div style="position:absolute; inset:0; background-image:
+      radial-gradient(1.8px 1.8px at 8% 12%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(1.5px 1.5px at 18% 6%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(2px 2px at 27% 16%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(1.4px 1.4px at 39% 8%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(1.7px 1.7px at 52% 14%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(1.5px 1.5px at 63% 5%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(1.9px 1.9px at 74% 18%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(1.4px 1.4px at 85% 9%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(1.8px 1.8px at 93% 20%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(1.5px 1.5px at 12% 26%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(1.6px 1.6px at 33% 30%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(1.4px 1.4px at 58% 27%, rgba(232,239,252,.95), transparent 60%),
+      radial-gradient(1.7px 1.7px at 80% 32%, rgba(232,239,252,.95), transparent 60%);
+      animation:twinkle 7s ease-in-out infinite;"></div>
+    <div style="position:absolute; inset:0; background-image:
+      radial-gradient(1.1px 1.1px at 14% 9%, rgba(232,239,252,.55), transparent 60%),
+      radial-gradient(1.2px 1.2px at 24% 20%, rgba(232,239,252,.55), transparent 60%),
+      radial-gradient(1px 1px at 44% 4%, rgba(232,239,252,.55), transparent 60%),
+      radial-gradient(1.1px 1.1px at 49% 22%, rgba(232,239,252,.55), transparent 60%),
+      radial-gradient(1.2px 1.2px at 68% 12%, rgba(232,239,252,.55), transparent 60%),
+      radial-gradient(1px 1px at 77% 26%, rgba(232,239,252,.55), transparent 60%),
+      radial-gradient(1.1px 1.1px at 88% 16%, rgba(232,239,252,.55), transparent 60%),
+      radial-gradient(1.2px 1.2px at 20% 34%, rgba(232,239,252,.55), transparent 60%),
+      radial-gradient(1px 1px at 62% 36%, rgba(232,239,252,.55), transparent 60%),
+      radial-gradient(1.1px 1.1px at 6% 40%, rgba(232,239,252,.55), transparent 60%);
+      animation:twinkle2 9s ease-in-out infinite; animation-delay:-4s;"></div>
+  </div>
+
+  <div ref="{{ r.moon }}" style="position:fixed; inset:0; z-index:0; pointer-events:none; will-change:transform,opacity;">
+    <div style="position:absolute; top:clamp(-40px,-3vw,0px); left:50%; transform:translateX(-50%); width:clamp(190px,42vw,330px); height:clamp(190px,42vw,330px); border-radius:50%; background:radial-gradient(circle at 38% 34%, #fefcf4 0%, #f4e8c8 42%, #ddc794 72%, #bfa06d 100%); box-shadow:0 0 110px 30px rgba(242,217,160,.32), 0 0 190px 70px rgba(124,155,207,.14); animation:moonPulse 6s ease-in-out infinite;">
+      <span style="position:absolute; top:26%; left:30%; width:16%; height:16%; border-radius:50%; background:rgba(160,140,100,.22);"></span>
+      <span style="position:absolute; top:52%; left:58%; width:11%; height:11%; border-radius:50%; background:rgba(160,140,100,.18);"></span>
+      <span style="position:absolute; top:64%; left:34%; width:8%; height:8%; border-radius:50%; background:rgba(160,140,100,.16);"></span>
+      <span style="position:absolute; top:40%; left:66%; width:6%; height:6%; border-radius:50%; background:rgba(160,140,100,.14);"></span>
+    </div>
+    <div style="position:absolute; top:34vh; left:50%; width:clamp(120px,26vw,220px); height:34vh; transform:translateX(-50%); background:linear-gradient(180deg, rgba(242,217,160,.34), rgba(242,217,160,0) 78%); filter:blur(6px); border-radius:50%; animation:shimmer 5s ease-in-out infinite;"></div>
+  </div>
+
+  <div ref="{{ r.shoot }}" style="position:fixed; inset:0; z-index:0; pointer-events:none;"></div>
+
+  <div ref="{{ r.waves }}" style="position:fixed; left:0; right:0; top:30vh; height:40vh; z-index:0; pointer-events:none; opacity:0; will-change:transform,opacity;">
+    <svg viewBox="0 0 1440 320" preserveAspectRatio="none" style="position:absolute; top:0; left:0; width:200%; height:120px; animation:waveMove 14s linear infinite;">
+      <path d="M0,160 C240,220 480,90 720,140 C960,190 1200,110 1440,150 L1440,320 L0,320 Z" fill="rgba(124,155,207,.16)"></path>
+    </svg>
+    <svg viewBox="0 0 1440 320" preserveAspectRatio="none" style="position:absolute; top:30px; left:0; width:200%; height:150px; animation:waveMove 9s linear infinite; animation-delay:-3s;">
+      <path d="M0,180 C220,120 520,240 760,180 C1000,120 1240,220 1440,170 L1440,320 L0,320 Z" fill="rgba(90,130,190,.14)"></path>
+    </svg>
+  </div>
+
+  <div ref="{{ r.fundo }}" style="position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0; will-change:opacity;">
+    <img src="assets/elementos/estrela-do-mar.webp" alt="" style="position:absolute; top:22%; left:8%; width:74px; --r:14deg; animation:floatStar 9s ease-in-out infinite; filter:drop-shadow(0 8px 18px rgba(0,0,0,.35));">
+    <img src="assets/elementos/estrela-do-mar.webp" alt="" style="position:absolute; top:58%; left:82%; width:96px; --r:-24deg; animation:floatStar 11s ease-in-out infinite; animation-delay:-2s; filter:drop-shadow(0 8px 18px rgba(0,0,0,.35));">
+    <img src="assets/elementos/estrela-do-mar.webp" alt="" style="position:absolute; top:74%; left:16%; width:58px; --r:40deg; animation:floatStar 8s ease-in-out infinite; animation-delay:-1s; filter:drop-shadow(0 8px 18px rgba(0,0,0,.35));">
+    <img src="assets/elementos/estrela-do-mar.webp" alt="" style="position:absolute; top:40%; left:60%; width:50px; --r:-8deg; animation:floatStar 10s ease-in-out infinite; animation-delay:-4s; opacity:.85;">
+    <div style="position:absolute; bottom:0; left:6%; width:16px; height:150px; transform-origin:bottom; background:linear-gradient(180deg,#3f8064,#1e4635); border-radius:10px 10px 3px 3px; animation:sway 6s ease-in-out infinite;"></div>
+    <div style="position:absolute; bottom:0; left:9%; width:12px; height:110px; transform-origin:bottom; background:linear-gradient(180deg,#4b906f,#22503b); border-radius:10px 10px 3px 3px; animation:sway 5s ease-in-out infinite; animation-delay:-1.5s;"></div>
+    <div style="position:absolute; bottom:0; right:8%; width:18px; height:170px; transform-origin:bottom; background:linear-gradient(180deg,#367159,#173d2d); border-radius:10px 10px 3px 3px; animation:sway 7s ease-in-out infinite; animation-delay:-2s;"></div>
+    <div style="position:absolute; bottom:0; right:12%; width:11px; height:120px; transform-origin:bottom; background:linear-gradient(180deg,#4b906f,#22503b); border-radius:10px 10px 3px 3px; animation:sway 5.5s ease-in-out infinite; animation-delay:-3s;"></div>
+    <span style="position:absolute; bottom:8%; left:30%; width:8px; height:8px; border-radius:50%; background:rgba(200,220,255,.5); animation:bubble 7s ease-in-out infinite;"></span>
+    <span style="position:absolute; bottom:12%; left:55%; width:6px; height:6px; border-radius:50%; background:rgba(200,220,255,.5); animation:bubble 9s ease-in-out infinite; animation-delay:-3s;"></span>
+    <span style="position:absolute; bottom:6%; left:70%; width:10px; height:10px; border-radius:50%; background:rgba(200,220,255,.45); animation:bubble 8s ease-in-out infinite; animation-delay:-5s;"></span>
+    <span style="position:absolute; bottom:14%; left:42%; width:5px; height:5px; border-radius:50%; background:rgba(200,220,255,.5); animation:bubble 6.5s ease-in-out infinite; animation-delay:-1.5s;"></span>
+  </div>
+
+  <div ref="{{ r.areia }}" style="position:fixed; left:0; right:0; bottom:0; height:32vh; z-index:0; pointer-events:none; opacity:0; background:radial-gradient(120% 90% at 50% 100%, rgba(230,206,151,.5) 0%, rgba(200,168,106,.2) 45%, transparent 75%); will-change:opacity;"></div>
+
+  <!-- ===================== TELA DE ENTRADA ===================== -->
+  <div style="{{ entradaStyle }}">
+    <div style="position:absolute; inset:0; overflow:hidden; pointer-events:none;">
+      <div style="position:absolute; inset:0; background-image:
+        radial-gradient(1.9px 1.9px at 11% 16%, rgba(232,239,252,.95), transparent 60%),
+        radial-gradient(1.5px 1.5px at 24% 9%, rgba(232,239,252,.95), transparent 60%),
+        radial-gradient(2px 2px at 35% 22%, rgba(232,239,252,.95), transparent 60%),
+        radial-gradient(1.5px 1.5px at 58% 26%, rgba(232,239,252,.95), transparent 60%),
+        radial-gradient(1.9px 1.9px at 82% 30%, rgba(232,239,252,.95), transparent 60%),
+        radial-gradient(1.4px 1.4px at 91% 15%, rgba(232,239,252,.95), transparent 60%),
+        radial-gradient(1.6px 1.6px at 7% 40%, rgba(232,239,252,.95), transparent 60%),
+        radial-gradient(1.8px 1.8px at 73% 54%, rgba(232,239,252,.95), transparent 60%),
+        radial-gradient(1.5px 1.5px at 29% 50%, rgba(232,239,252,.95), transparent 60%);
+        animation:twinkle 6s ease-in-out infinite;"></div>
+      <div style="position:absolute; top:clamp(-30px,-2vw,10px); left:50%; transform:translateX(-50%); width:clamp(200px,46vw,360px); height:clamp(200px,46vw,360px); border-radius:50%; background:radial-gradient(circle at 38% 34%, #fefcf4 0%, #f4e8c8 42%, #ddc794 72%, #bfa06d 100%); box-shadow:0 0 120px 34px rgba(242,217,160,.34), 0 0 210px 80px rgba(124,155,207,.16); animation:moonPulse 6s ease-in-out infinite;">
+        <span style="position:absolute; top:26%; left:30%; width:16%; height:16%; border-radius:50%; background:rgba(160,140,100,.22);"></span>
+        <span style="position:absolute; top:52%; left:58%; width:11%; height:11%; border-radius:50%; background:rgba(160,140,100,.18);"></span>
+        <span style="position:absolute; top:64%; left:34%; width:8%; height:8%; border-radius:50%; background:rgba(160,140,100,.16);"></span>
+      </div>
+    </div>
+    <div style="position:relative; z-index:1; width:min(100%,36rem); text-align:center; padding:1.5rem; margin-top:clamp(9rem,28vh,15rem); margin-bottom:2rem;">
+      <p style="font-size:.78rem; letter-spacing:.34em; text-transform:uppercase; color:#F2D9A0; opacity:.82; margin:0 0 1.1rem;">A nossa história</p>
+      <h1 style="font-family:'Playfair Display',serif; font-weight:500; font-size:clamp(2rem,7.6vw,4.2rem); color:#E8EFFC; text-shadow:0 0 30px rgba(242,217,160,.35); margin:0 0 1rem; line-height:1.15; text-wrap:balance; animation:riseIn 1.1s ease both;">{{ nomeA }} <span style="color:#E08497;">&amp;</span> {{ nomeB }}</h1>
+      <p style="max-width:30rem; margin:0 auto 2.6rem; color:#9DB2D8; font-size:clamp(.98rem,2.6vw,1.1rem); animation:riseIn 1.1s ease .2s both;">{{ frase }}</p>
+      <button type="button" onClick="{{ entrar }}" style="position:relative; width:118px; height:118px; margin:2.4rem auto 0; transform:rotate(-45deg); background:#7E1E32; border:0; border-radius:0 0 0 14px; box-shadow:0 14px 40px rgba(3,10,24,.6); cursor:pointer; transition:transform .32s cubic-bezier(.22,.61,.36,1), background .32s;" style-hover="transform:rotate(-45deg) scale(1.08); background:#A83A51;">
+        <span style="position:absolute; top:-59px; left:0; width:118px; height:118px; background:inherit; border-radius:50%;"></span>
+        <span style="position:absolute; top:0; left:59px; width:118px; height:118px; background:inherit; border-radius:50%;"></span>
+        <span style="position:relative; z-index:2; display:grid; place-items:center; width:100%; height:100%; transform:translate(29.5px,-29.5px) rotate(45deg); color:#FFF3F1; font-family:'Playfair Display',serif; font-size:1.32rem; letter-spacing:.04em;">Entrar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================== CONTEÚDO ===================== -->
+  <main ref="{{ r.content }}" style="{{ conteudoStyle }}">
+
+    <!-- TRILHA -->
+    <header style="padding:1.6rem 1.25rem 0; position:relative; z-index:2;">
+      <div style="display:flex; align-items:center; gap:.85rem; max-width:620px; margin:0 auto; padding:.55rem; background:linear-gradient(160deg,#14294C,#0D1F3C); border:1px solid rgba(124,155,207,.22); border-radius:18px; box-shadow:0 6px 22px rgba(3,10,24,.45);">
+        <img src="assets/fotos/thumbs/foto-013.jpg" alt="" style="flex:none; width:56px; height:56px; object-fit:cover; border-radius:10px; background:#1B3660;">
+        <div style="flex:1; min-width:0; text-align:left;">
+          <span style="display:block; font-family:'Playfair Display',serif; font-size:1rem; color:#E8EFFC; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ faixaTitulo }}</span>
+          <span style="display:block; font-size:.76rem; color:#9DB2D8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ faixaArtista }}</span>
+        </div>
+        <div style="flex:none; display:flex; align-items:flex-end; gap:3px; height:24px; margin-right:.4rem;">
+          <sc-if value="{{ playing }}" hint-placeholder-val="{{ true }}">
+            <span style="width:3px; height:5px; background:#7C9BCF; border-radius:2px; animation:eq .8s ease-in-out infinite;"></span>
+            <span style="width:3px; height:5px; background:#7C9BCF; border-radius:2px; animation:eq .8s ease-in-out infinite; animation-delay:-.3s;"></span>
+            <span style="width:3px; height:5px; background:#7C9BCF; border-radius:2px; animation:eq .8s ease-in-out infinite; animation-delay:-.6s;"></span>
+            <span style="width:3px; height:5px; background:#7C9BCF; border-radius:2px; animation:eq .8s ease-in-out infinite; animation-delay:-.15s;"></span>
+          </sc-if>
+        </div>
+        <div style="flex:none; display:flex; align-items:center; gap:.1rem;">
+          <button type="button" onClick="{{ musicaPrev }}" aria-label="Anterior" style="display:grid; place-items:center; width:40px; height:40px; border:0; border-radius:50%; background:none; color:#E8EFFC; font-size:1.5rem; cursor:pointer; transition:background .3s;" style-hover="background:#1B3660;">&lsaquo;</button>
+          <button type="button" onClick="{{ musicaToggle }}" aria-label="Tocar" style="display:grid; place-items:center; width:40px; height:40px; border:0; border-radius:50%; background:#7E1E32; color:#FFF3F1; font-size:.85rem; cursor:pointer; transition:background .3s;" style-hover="background:#A83A51;">{{ playIcon }}</button>
+          <button type="button" onClick="{{ musicaNext }}" aria-label="Próxima" style="display:grid; place-items:center; width:40px; height:40px; border:0; border-radius:50%; background:none; color:#E8EFFC; font-size:1.5rem; cursor:pointer; transition:background .3s;" style-hover="background:#1B3660;">&rsaquo;</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTADOR -->
+    <section data-revelar style="position:relative; max-width:1080px; margin:0 auto; padding:clamp(3.5rem,9vw,6rem) 1.25rem; text-align:center; z-index:2;">
+      <h2 style="font-family:'Playfair Display',serif; font-weight:500; font-size:clamp(1.7rem,5vw,2.6rem); color:#E8EFFC; text-shadow:0 0 26px rgba(242,217,160,.3); margin:0 0 .5rem; line-height:1.15;">Faz quanto tempo</h2>
+      <div style="width:clamp(150px,40vw,220px); height:1px; margin:1.4rem auto 2rem; background:linear-gradient(90deg,transparent,rgba(242,217,160,.5),transparent);"></div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:2.4rem 1.25rem; max-width:720px; margin:0 auto;">
+        <article style="position:relative; display:flex; flex-direction:column; align-items:center; padding:2.2rem 1.4rem 1.8rem; background:linear-gradient(160deg,#14294C,#0D1F3C); border:1px solid rgba(124,155,207,.22); border-radius:18px; box-shadow:0 6px 22px rgba(3,10,24,.45);">
+          <span style="font-size:.82rem; letter-spacing:.16em; text-transform:uppercase; color:#9DB2D8;">Recap</span>
+          <strong ref="{{ r.diasC }}" style="font-family:'Playfair Display',serif; font-size:clamp(2.8rem,11vw,3.9rem); font-weight:600; line-height:1.05; color:#E8EFFC; text-shadow:0 0 26px rgba(242,217,160,.3); font-variant-numeric:tabular-nums;">—</strong>
+          <span style="font-size:1rem; color:#E08497; letter-spacing:.06em;">dias</span>
+          <span style="margin-top:.7rem; font-size:.78rem; color:#9DB2D8; opacity:.85;">desde 13 de outubro de 2025</span>
+        </article>
+        <article style="position:relative; display:flex; flex-direction:column; align-items:center; padding:2.2rem 1.4rem 1.8rem; background:linear-gradient(160deg,#1B3660,#14294C); border:1px solid rgba(168,58,81,.55); border-radius:18px; box-shadow:0 6px 22px rgba(3,10,24,.45);">
+          <span style="position:absolute; top:-13px; width:26px; height:26px; background:#A83A51; transform:rotate(-45deg); animation:heartPulse 2.6s ease-in-out infinite;">
+            <span style="content:''; position:absolute; top:-13px; left:0; width:26px; height:26px; background:inherit; border-radius:50%;"></span>
+            <span style="content:''; position:absolute; top:0; left:13px; width:26px; height:26px; background:inherit; border-radius:50%;"></span>
+          </span>
+          <span style="font-size:.82rem; letter-spacing:.16em; text-transform:uppercase; color:#9DB2D8;">Namoro</span>
+          <strong ref="{{ r.diasN }}" style="font-family:'Playfair Display',serif; font-size:clamp(2.8rem,11vw,3.9rem); font-weight:600; line-height:1.05; color:#E8EFFC; text-shadow:0 0 26px rgba(242,217,160,.3); font-variant-numeric:tabular-nums;">—</strong>
+          <span style="font-size:1rem; color:#E08497; letter-spacing:.06em;">dias</span>
+          <span style="margin-top:.7rem; font-size:.78rem; color:#9DB2D8; opacity:.85;">desde 22 de maio de 2026</span>
+          <p ref="{{ r.det }}" style="margin:.9rem 0 0; padding-top:.9rem; border-top:1px dashed rgba(124,155,207,.22); width:100%; font-size:.92rem; color:#E8EFFC;"></p>
+        </article>
+      </div>
+      <p ref="{{ r.relogio }}" style="margin:1.6rem 0 0; font-size:.9rem; color:#9DB2D8; font-variant-numeric:tabular-nums;"></p>
+    </section>
+
+    <!-- TIMELINE -->
+    <section data-revelar style="position:relative; max-width:1080px; margin:0 auto; padding:clamp(3.5rem,9vw,6rem) 1.25rem; text-align:center; z-index:2;">
+      <h2 style="font-family:'Playfair Display',serif; font-weight:500; font-size:clamp(1.7rem,5vw,2.6rem); color:#E8EFFC; text-shadow:0 0 26px rgba(242,217,160,.3); margin:0 0 .5rem; line-height:1.15;">Os nossos marcos</h2>
+      <div style="width:clamp(150px,40vw,220px); height:1px; margin:1.4rem auto 2.4rem; background:linear-gradient(90deg,transparent,rgba(242,217,160,.5),transparent);"></div>
+      <ol style="list-style:none; position:relative; max-width:660px; margin:0 auto; padding:0; text-align:left;">
+        <div style="position:absolute; top:6px; bottom:6px; left:15px; width:2px; background:linear-gradient(180deg,transparent,#35735A 10%,#35735A 90%,transparent);"></div>
+        <sc-for list="{{ marcos }}" as="m" hint-placeholder-count="2">
+          <li data-revelar style="position:relative; padding:0 0 2.8rem 3rem;">
+            <img src="assets/elementos/estrela-do-mar.webp" alt="" style="position:absolute; left:3px; top:2px; width:28px; height:28px; filter:drop-shadow(0 0 8px rgba(242,217,160,.4));">
+            <span style="display:inline-block; font-size:.74rem; letter-spacing:.14em; text-transform:uppercase; color:#F2D9A0; margin-bottom:.3rem;">{{ m.dataFmt }}</span>
+            <h3 style="font-family:'Playfair Display',serif; font-weight:500; font-size:1.35rem; color:#E8EFFC; margin:0 0 .4rem;">{{ m.titulo }}</h3>
+            <p style="color:#9DB2D8; font-size:.96rem; margin:0;">{{ m.descricao }}</p>
+            <img src="{{ m.foto }}" alt="{{ m.titulo }}" style="margin-top:.9rem; width:100%; max-width:260px; aspect-ratio:4/3; object-fit:cover; border:1px solid rgba(124,155,207,.22); border-radius:12px; box-shadow:0 6px 22px rgba(3,10,24,.45);">
+          </li>
+        </sc-for>
+      </ol>
+    </section>
+
+    <!-- CALENDÁRIO -->
+    <section data-revelar style="position:relative; max-width:1080px; margin:0 auto; padding:clamp(3.5rem,9vw,6rem) 1.25rem; text-align:center; z-index:2;">
+      <h2 style="font-family:'Playfair Display',serif; font-weight:500; font-size:clamp(1.7rem,5vw,2.6rem); color:#E8EFFC; text-shadow:0 0 26px rgba(242,217,160,.3); margin:0 0 .5rem; line-height:1.15;">Nosso calendário</h2>
+      <p style="color:#9DB2D8; font-size:.98rem; margin:0 0 2.2rem;">Os dias marcados com uma estrela-do-mar têm foto.</p>
+      <div style="max-width:460px; margin:0 auto; padding:1.3rem; background:linear-gradient(160deg,#14294C,#0D1F3C); border:1px solid rgba(124,155,207,.22); border-radius:18px; box-shadow:0 6px 22px rgba(3,10,24,.45);">
+        <header style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+          <button type="button" onClick="{{ calPrev }}" aria-label="Mês anterior" style="width:38px; height:38px; border:0; border-radius:50%; font-size:1.5rem; line-height:1; color:#E8EFFC; background:#1B3660; cursor:pointer; transition:background .3s,color .3s;" style-hover="background:#7E1E32; color:#FFF3F1;">&lsaquo;</button>
+          <h3 style="font-family:'Playfair Display',serif; font-weight:500; font-size:1.15rem; color:#E8EFFC; margin:0;">{{ calLabel }}</h3>
+          <button type="button" onClick="{{ calNext }}" aria-label="Próximo mês" style="width:38px; height:38px; border:0; border-radius:50%; font-size:1.5rem; line-height:1; color:#E8EFFC; background:#1B3660; cursor:pointer; transition:background .3s,color .3s;" style-hover="background:#7E1E32; color:#FFF3F1;">&rsaquo;</button>
+        </header>
+        <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:.5rem; font-size:.72rem; letter-spacing:.1em; color:#9DB2D8;">
+          <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px;">
+          <sc-for list="{{ celulas }}" as="c" hint-placeholder-count="35">
+            <div style="{{ c.estilo }}">{{ c.dia }}<sc-if value="{{ c.temFoto }}" hint-placeholder-val="{{ false }}"><img src="assets/elementos/estrela-do-mar.webp" alt="" style="position:absolute; bottom:2px; right:2px; width:13px; height:13px; filter:brightness(1.15);"></sc-if></div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALERIA -->
+    <section data-revelar style="position:relative; max-width:1080px; margin:0 auto; padding:clamp(3.5rem,9vw,6rem) 1.25rem; text-align:center; z-index:2;">
+      <h2 style="font-family:'Playfair Display',serif; font-weight:500; font-size:clamp(1.7rem,5vw,2.6rem); color:#E8EFFC; text-shadow:0 0 26px rgba(242,217,160,.3); margin:0 0 .5rem; line-height:1.15;">Todas as nossas fotos</h2>
+      <p style="color:#9DB2D8; font-size:.98rem; margin:0 0 2.2rem;">Arraste as fotos para os espaços — cada momento no seu quadradinho.</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px;">
+        <sc-for list="{{ galeria }}" as="g" hint-placeholder-count="12">
+          <div style="position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; background:#14294C;">
+            <image-slot id="{{ g }}" shape="rect" placeholder="sua foto" style="width:100%; height:100%;"></image-slot>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- MAPA DOS LUGARES -->
+    <section data-revelar style="position:relative; max-width:1080px; margin:0 auto; padding:clamp(3.5rem,9vw,6rem) 1.25rem; text-align:center; z-index:2;">
+      <h2 style="font-family:'Playfair Display',serif; font-weight:500; font-size:clamp(1.7rem,5vw,2.6rem); color:#E8EFFC; text-shadow:0 0 26px rgba(242,217,160,.3); margin:0 0 .5rem; line-height:1.15;">O mapa dos nossos lugares</h2>
+      <p style="color:#9DB2D8; font-size:.98rem; margin:0 0 2.4rem;">Cada estrela é um lugar que virou nosso — uma constelação só da gente.</p>
+      <div style="position:relative; max-width:720px; margin:0 auto; aspect-ratio:16/10; border-radius:18px; overflow:hidden; background:radial-gradient(120% 120% at 30% 20%, #16305A 0%, #0D1F3C 55%, #06122A 100%); border:1px solid rgba(124,155,207,.22); box-shadow:0 6px 22px rgba(3,10,24,.45);">
+        <svg viewBox="0 0 720 450" style="position:absolute; inset:0; width:100%; height:100%;">
+          <polyline points="130,120 300,90 440,220 250,300 560,330" fill="none" stroke="rgba(242,217,160,.5)" stroke-width="1.5" stroke-dasharray="5 7"></polyline>
+        </svg>
+        <sc-for list="{{ lugares }}" as="p" hint-placeholder-count="5">
+          <div style="{{ p.estilo }}">
+            <span style="display:block; width:14px; height:14px; margin:0 auto 6px; border-radius:50%; background:#F2D9A0; box-shadow:0 0 14px 4px rgba(242,217,160,.6); animation:bob 4s ease-in-out infinite;"></span>
+            <span style="display:block; font-family:'Playfair Display',serif; font-size:.92rem; color:#E8EFFC; white-space:nowrap;">{{ p.nome }}</span>
+            <span style="display:block; font-size:.72rem; color:#9DB2D8;">{{ p.sub }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- LISTA DE SONHOS -->
+    <section data-revelar style="position:relative; max-width:1080px; margin:0 auto; padding:clamp(3.5rem,9vw,6rem) 1.25rem; text-align:center; z-index:2;">
+      <h2 style="font-family:'Playfair Display',serif; font-weight:500; font-size:clamp(1.7rem,5vw,2.6rem); color:#E8EFFC; text-shadow:0 0 26px rgba(242,217,160,.3); margin:0 0 .5rem; line-height:1.15;">A nossa lista de sonhos</h2>
+      <p style="color:#9DB2D8; font-size:.98rem; margin:0 0 2.4rem;">As coisas que a gente ainda quer viver — riscar cada uma vai ser a melhor parte.</p>
+      <ul style="list-style:none; max-width:560px; margin:0 auto; padding:0; display:flex; flex-direction:column; gap:.8rem; text-align:left;">
+        <sc-for list="{{ sonhos }}" as="s" hint-placeholder-count="5">
+          <li style="display:flex; align-items:center; gap:.9rem; padding:1rem 1.2rem; background:linear-gradient(160deg,#14294C,#0D1F3C); border:1px solid rgba(124,155,207,.22); border-radius:14px; box-shadow:0 6px 22px rgba(3,10,24,.35);">
+            <img src="assets/elementos/estrela-do-mar.webp" alt="" style="flex:none; width:30px; height:30px; filter:{{ s.filtro }};">
+            <span style="flex:1; font-size:1rem; color:{{ s.cor }}; text-decoration:{{ s.risco }};">{{ s.texto }}</span>
+          </li>
+        </sc-for>
+      </ul>
+    </section>
+
+    <!-- PLAYLIST -->
+    <section data-revelar style="position:relative; max-width:1080px; margin:0 auto; padding:clamp(3.5rem,9vw,6rem) 1.25rem; text-align:center; z-index:2;">
+      <h2 style="font-family:'Playfair Display',serif; font-weight:500; font-size:clamp(1.7rem,5vw,2.6rem); color:#E8EFFC; text-shadow:0 0 26px rgba(242,217,160,.3); margin:0 0 .5rem; line-height:1.15;">A nossa playlist</h2>
+      <p style="color:#9DB2D8; font-size:.98rem; margin:0 0 2.2rem;">Todas as músicas, para ouvir com calma depois.</p>
+      <div style="max-width:620px; margin:0 auto; padding:.55rem; background:linear-gradient(160deg,#14294C,#0D1F3C); border:1px solid rgba(124,155,207,.22); border-radius:18px; box-shadow:0 6px 22px rgba(3,10,24,.45);">
+        <iframe src="https://open.spotify.com/embed/playlist/2tCktWMXFeq2Um3Gybs314" width="100%" height="352" frameborder="0" loading="lazy" title="Nossa playlist no Spotify" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style="display:block; border-radius:12px; border:0;"></iframe>
+      </div>
+    </section>
+
+    <!-- RODAPÉ / AREIA -->
+    <footer style="position:relative; z-index:2; margin-top:2rem; padding:6rem 1.25rem 4rem; text-align:center; color:#6b5836; background:linear-gradient(180deg, transparent 0%, rgba(216,191,136,.15) 14%, #d8bf88 40%, #cbb079 100%);">
+      <svg viewBox="0 0 1440 90" preserveAspectRatio="none" style="position:absolute; top:0; left:0; width:100%; height:70px;">
+        <path d="M0,60 C240,20 480,80 720,50 C960,20 1200,70 1440,40 L1440,90 L0,90 Z" fill="#d8bf88"></path>
+      </svg>
+      <img src="assets/elementos/estrela-do-mar.webp" alt="" style="width:66px; margin:0 auto .6rem; filter:drop-shadow(0 6px 12px rgba(120,90,40,.35));">
+      <span style="display:block; font-size:1.3rem; color:#7E1E32; margin-bottom:.5rem;">&#10084;</span>
+      <p ref="{{ r.rodape }}" style="margin:0; font-size:.9rem; color:#6b5836;"></p>
+    </footer>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { entered:false, calAno:2025, calMes:9, playing:false, musicIdx:0 };
+
+  casal = { nomeA:"Amanda Letícia", nomeB:"João Vitor", frase:"Um cantinho na internet só nosso, para guardar o que a gente já viveu." };
+
+  MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+
+  fotosPorDia = { "2025-10-13":["foto-001"], "2026-05-22":["foto-002"] };
+
+  timelineData = [
+    { data:"2025-10-13", titulo:"O primeiro oi", descricao:"O dia em que a gente começou a conversar e nem imaginava onde isso ia dar.", foto:"assets/fotos/thumbs/foto-001.jpg" },
+    { data:"2026-05-22", titulo:"Oficializamos", descricao:"O dia em que a gente parou de enrolar e virou namoro de verdade.", foto:"assets/fotos/thumbs/foto-002.jpg" }
+  ];
+
+  trilhaData = [
+    { titulo:"Todo o Amor Que Houver Nessa Vida", artista:"Cazuza" },
+    { titulo:"Um Girassol da Cor do Seu Cabelo", artista:"Lô Borges" },
+    { titulo:"Mystery of Love", artista:"Sufjan Stevens" }
+  ];
+
+  lugaresData = [
+    { nome:"Onde tudo começou", sub:"o primeiro encontro", top:"20%", left:"14%" },
+    { nome:"Nosso primeiro rolê", sub:"—", top:"14%", left:"40%" },
+    { nome:"A praia que a gente ama", sub:"—", top:"46%", left:"58%" },
+    { nome:"O nosso cantinho", sub:"—", top:"64%", left:"32%" },
+    { nome:"O próximo lugar", sub:"a gente escolhe juntos", top:"70%", left:"76%" }
+  ];
+
+  sonhosData = [
+    { texto:"Ver o nascer do sol na praia, juntos", feito:true },
+    { texto:"Uma viagem só nossa pro litoral", feito:false },
+    { texto:"Aprender a surfar (ou pelo menos tentar)", feito:false },
+    { texto:"Colecionar uma concha de cada praia que a gente for", feito:false },
+    { texto:"Uma noite inteira só olhando as estrelas", feito:false }
+  ];
+
+  r = {
+    stars:React.createRef(), moon:React.createRef(), shoot:React.createRef(),
+    waves:React.createRef(), fundo:React.createRef(), areia:React.createRef(),
+    content:React.createRef(), relogio:React.createRef(), diasC:React.createRef(),
+    diasN:React.createRef(), det:React.createRef(), rodape:React.createRef()
+  };
+
+  componentDidMount() {
+    document.documentElement.style.overflow = "hidden";
+    if (this.r.rodape.current) this.r.rodape.current.textContent = "Feito com amor por " + this.casal.nomeB + ", para " + this.casal.nomeA + ".";
+    this.tick();
+    this._clock = setInterval(() => this.tick(), 1000);
+    this._onScroll = () => { if (!this._raf) this._raf = requestAnimationFrame(() => { this._raf=0; this.parallax(); }); };
+    window.addEventListener("scroll", this._onScroll, { passive:true });
+    this.parallax();
+    this._shoot = setInterval(() => this.spawnShoot(), 4200);
+    this.setupReveal();
+  }
+  componentWillUnmount() {
+    clearInterval(this._clock); clearInterval(this._shoot);
+    window.removeEventListener("scroll", this._onScroll);
+    document.documentElement.style.overflow = "";
+  }
+
+  diasEntre(ini, agora) {
+    const a = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate());
+    const b = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+    return Math.round((b - a) / 86400000);
+  }
+  detalhar(ini, agora) {
+    let anos = agora.getFullYear()-ini.getFullYear();
+    let meses = agora.getMonth()-ini.getMonth();
+    let dias = agora.getDate()-ini.getDate();
+    if (dias < 0) { meses -= 1; dias += new Date(agora.getFullYear(), agora.getMonth(), 0).getDate(); }
+    if (meses < 0) { meses += 12; anos -= 1; }
+    return { anos, meses, dias };
+  }
+  frasear(d) {
+    const p = [];
+    const pl = (n,s,pp) => n + " " + (n===1?s:pp);
+    if (d.anos) p.push(pl(d.anos,"ano","anos"));
+    if (d.meses) p.push(pl(d.meses,"mês","meses"));
+    if (d.dias) p.push(pl(d.dias,"dia","dias"));
+    if (!p.length) return "hoje é o primeiro dia";
+    if (p.length===1) return p[0];
+    return p.slice(0,-1).join(", ") + " e " + p[p.length-1];
+  }
+  dd(n) { return n<10 ? "0"+n : ""+n; }
+
+  tick() {
+    const agora = new Date();
+    const conv = new Date(2025,9,13), nam = new Date(2026,4,22);
+    if (this.r.diasC.current) this.r.diasC.current.textContent = this.diasEntre(conv,agora).toLocaleString("pt-BR");
+    if (this.r.diasN.current) this.r.diasN.current.textContent = this.diasEntre(nam,agora).toLocaleString("pt-BR");
+    if (this.r.det.current) this.r.det.current.textContent = "ou seja, " + this.frasear(this.detalhar(nam,agora));
+    if (this.r.relogio.current) this.r.relogio.current.textContent = "e mais " + agora.getHours() + "h " + this.dd(agora.getMinutes()) + "min " + this.dd(agora.getSeconds()) + "s de hoje";
+  }
+
+  clamp(v){ return Math.max(0, Math.min(1, v)); }
+  parallax() {
+    const y = window.scrollY || 0;
+    const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const p = y / max;
+    const set = (ref, o, ty) => { const el = ref.current; if (!el) return; el.style.opacity = o; if (ty !== undefined) el.style.transform = "translateY(" + ty + "px)"; };
+    set(this.r.stars, this.clamp(1 - p/0.16), -y*0.25);
+    const el = this.r.moon.current;
+    if (el) { el.style.opacity = this.clamp(1 - (p-0.04)/0.16); el.style.transform = "translateY(" + (-y*0.32) + "px)"; }
+    if (this.r.waves.current) this.r.waves.current.style.opacity = this.clamp(1 - Math.abs(p-0.13)/0.15);
+    if (this.r.fundo.current) this.r.fundo.current.style.opacity = this.clamp((p-0.16)/0.14) * this.clamp((0.9-p)/0.1);
+    if (this.r.areia.current) this.r.areia.current.style.opacity = this.clamp((p-0.82)/0.12);
+    this.reveal();
+  }
+
+  spawnShoot() {
+    const box = this.r.shoot.current;
+    if (!box || window.scrollY > window.innerHeight*0.6) return;
+    if (Math.random() > 0.55) return;
+    const s = document.createElement("div");
+    const top = Math.random()*22 + 3, left = Math.random()*55 + 8;
+    s.style.cssText = "position:absolute; top:"+top+"%; left:"+left+"%; width:120px; height:1.6px; background:linear-gradient(90deg, rgba(255,255,255,.9), rgba(255,255,255,0)); border-radius:2px; transform:rotate(38deg); filter:drop-shadow(0 0 6px rgba(255,255,255,.7)); animation:shootAcross 1.5s ease-in forwards;";
+    box.appendChild(s);
+    s.addEventListener("animationend", () => s.remove());
+  }
+
+  setupReveal() {
+    const root = this.r.content.current;
+    if (!root) return;
+    this._reveals = [...root.querySelectorAll("[data-revelar]")];
+    this._reveals.forEach(el => { el.style.opacity = "0"; el.style.transform = "translateY(28px)"; el.style.transition = "opacity .8s ease, transform .8s cubic-bezier(.22,.61,.36,1)"; });
+    this.reveal();
+  }
+  reveal() {
+    if (!this._reveals) return;
+    const h = window.innerHeight;
+    this._reveals = this._reveals.filter(el => {
+      const t = el.getBoundingClientRect().top;
+      if (t < h * 0.9) { el.style.opacity = "1"; el.style.transform = "none"; return false; }
+      return true;
+    });
+  }
+
+  entrar = () => {
+    this.setState({ entered:true, playing:true });
+    document.documentElement.style.overflow = "";
+    requestAnimationFrame(() => this.parallax());
+  };
+  calNav = (passo) => {
+    let m = this.state.calMes + passo, a = this.state.calAno;
+    if (m>11){m=0;a++;} if (m<0){m=11;a--;}
+    this.setState({ calAno:a, calMes:m });
+  };
+  musicaToggle = () => this.setState(s => ({ playing:!s.playing }));
+  musicaPrev = () => this.setState(s => ({ musicIdx:(s.musicIdx - 1 + this.trilhaData.length) % this.trilhaData.length, playing:true }));
+  musicaNext = () => this.setState(s => ({ musicIdx:(s.musicIdx + 1) % this.trilhaData.length, playing:true }));
+
+  chave(a,m,d){ return a + "-" + this.dd(m+1) + "-" + this.dd(d); }
+  montarCelulas() {
+    const { calAno:a, calMes:m } = this.state;
+    const primeiro = new Date(a,m,1).getDay();
+    const dias = new Date(a,m+1,0).getDate();
+    const hoje = new Date();
+    const base = "position:relative; aspect-ratio:1; display:grid; place-items:center; border-radius:10px; font-size:.9rem;";
+    const cs = [];
+    for (let i=0;i<primeiro;i++) cs.push({ dia:"", temFoto:false, estilo:base+"visibility:hidden;" });
+    for (let d=1; d<=dias; d++) {
+      const k = this.chave(a,m,d);
+      const temFoto = !!(this.fotosPorDia[k] && this.fotosPorDia[k].length);
+      const ehHoje = hoje.getFullYear()===a && hoje.getMonth()===m && hoje.getDate()===d;
+      let est = base;
+      if (temFoto) est += "background:linear-gradient(160deg,#7E1E32,#4E0F1E); border:1px solid #A83A51; color:#FFF3F1; font-weight:500; cursor:pointer;";
+      else if (ehHoje) est += "border:1px dashed #7C9BCF; color:#E8EFFC; font-weight:500;";
+      else est += "color:#9DB2D8;";
+      cs.push({ dia:d, temFoto, estilo:est });
+    }
+    return cs;
+  }
+
+  renderVals() {
+    const marcos = this.timelineData.slice().sort((x,y) => x.data < y.data ? -1 : 1).map(m => {
+      const p = m.data.split("-");
+      return { ...m, dataFmt: parseInt(p[2],10) + " de " + this.MESES[parseInt(p[1],10)-1] + " de " + p[0] };
+    });
+    const lugares = this.lugaresData.map(l => ({
+      nome:l.nome, sub:l.sub,
+      estilo: "position:absolute; top:"+l.top+"; left:"+l.left+"; transform:translate(-50%,-50%); text-align:center;"
+    }));
+    const sonhos = this.sonhosData.map(s => ({
+      texto:s.texto,
+      cor: s.feito ? "#9DB2D8" : "#E8EFFC",
+      risco: s.feito ? "line-through" : "none",
+      filtro: s.feito ? "none" : "grayscale(.5) opacity(.6)"
+    }));
+    const t = this.trilhaData[this.state.musicIdx];
+    return {
+      r: this.r,
+      nomeA:this.casal.nomeA, nomeB:this.casal.nomeB, frase:this.casal.frase,
+      entrar:this.entrar,
+      entradaStyle: "position:fixed; inset:0; z-index:100; display:grid; place-items:start center; padding:1.5rem; overflow-x:hidden; overflow-y:auto; background:radial-gradient(120% 90% at 50% 8%, #16305A 0%, #0D1F3C 48%, #06122A 100%); transition:opacity .9s ease, visibility .9s ease;" + (this.state.entered ? "opacity:0; visibility:hidden; pointer-events:none;" : ""),
+      conteudoStyle: "position:relative; z-index:2; transition:opacity .7s ease; opacity:" + (this.state.entered ? "1" : "0") + ";",
+      marcos, lugares, sonhos,
+      celulas: this.montarCelulas(),
+      calLabel: this.MESES[this.state.calMes] + " de " + this.state.calAno,
+      calPrev:() => this.calNav(-1), calNext:() => this.calNav(1),
+      galeria: Array.from({length:12}, (_,i) => "gal-"+(i+1)),
+      playing:this.state.playing,
+      playIcon: this.state.playing ? "❚❚" : "▶",
+      faixaTitulo:t.titulo, faixaArtista:t.artista,
+      musicaToggle:this.musicaToggle, musicaPrev:this.musicaPrev, musicaNext:this.musicaNext
+    };
+  }
+}
+</script>
+</body>
+</html>

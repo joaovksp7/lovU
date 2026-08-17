@@ -20,8 +20,18 @@ código das seções.
    aparece quebrada na grade.
 3. Acrescente `"foto-083"` no fim da lista `fotos`.
 
-> Não tem ferramenta para redimensionar? O jeito rápido é o
-> [squoosh.app](https://squoosh.app) — abre no navegador, não instala nada.
+> **Redimensionar sem sair da máquina:** o `ffmpeg` já está instalado aqui.
+> Com a foto original em `assets/fotos/originais/`, os dois arquivos saem de
+> dois comandos (o `if` é só para o lado maior valer, seja retrato ou paisagem):
+>
+> ```sh
+> cd assets/fotos
+> ffmpeg -i originais/IMG.jpg -vf "scale=w='if(gte(iw,ih),1600,-2)':h='if(gte(iw,ih),-2,1600)':flags=lanczos" -q:v 4 foto-095.jpg
+> ffmpeg -i foto-095.jpg      -vf "scale=w='if(gte(iw,ih),500,-2)':h='if(gte(iw,ih),-2,500)':flags=lanczos"   -q:v 4 thumbs/foto-095.jpg
+> ```
+>
+> Se preferir no navegador, o [squoosh.app](https://squoosh.app) faz o mesmo
+> sem instalar nada.
 
 Vídeo é igual, com `"video-002"` e o `.mp4` em `assets/fotos/`. Vídeo não
 precisa de miniatura: a grade mostra um card com o ícone de play.
@@ -38,15 +48,36 @@ const fotosPorDia = {
 };
 ```
 
-Só os dias que aparecem aqui ficam destacados e clicáveis no calendário. As
-fotos continuam todas na galeria de qualquer jeito — datar é opcional, dá para
-ir fazendo aos poucos.
+As fotos continuam todas na galeria de qualquer jeito — datar é opcional, dá
+para ir fazendo aos poucos.
 
-> ⚠️ **As duas datas que já estão lá usam fotos de exemplo.** As fotos vieram
-> do WhatsApp sem data (o EXIF é apagado no envio), então não deu para saber de
-> que dia cada uma é. Troque `foto-001` e `foto-002` pelas certas.
+> ⚠️ **`2026-05-22` ainda usa uma foto de exemplo** (`foto-002`). As fotos
+> vieram do WhatsApp sem data (o EXIF é apagado no envio), então não deu para
+> saber de que dia cada uma é. Troque pela certa quando souber.
 
-### 3. Adicionar um marco na timeline
+### 3. Escrever o recado de um dia
+
+O objeto `frasesPorDia` guarda uma frase por data — o que você escreveria no
+verso da foto:
+
+```js
+const frasesPorDia = {
+  "2024-09-18": "Nosso primeiro contato no Viva Unisc.",
+  "2024-10-13": "Nossa primeira foto juntos."
+};
+```
+
+Duas coisas acontecem com essa frase:
+
+- **Se o dia tiver foto** em `fotosPorDia`, ela vira a legenda dentro do
+  lightbox, no lugar da data por extenso.
+- **Se o dia não tiver foto nenhuma**, ele acende no calendário assim mesmo —
+  vazado, sem preenchimento — e ao tocar a frase aparece logo abaixo da grade.
+  É como entram os dias de que não sobrou imagem.
+
+Ou seja: um dia acende no calendário se tiver **foto ou frase**.
+
+### 4. Adicionar um marco na timeline
 
 Um objeto novo no array `timeline`:
 
@@ -61,7 +92,7 @@ Um objeto novo no array `timeline`:
 
 A ordem no arquivo não importa — a timeline se ordena sozinha pela data.
 
-### 4. Trocar as músicas da trilha
+### 5. Trocar as músicas da trilha
 
 A página sorteia **uma** das músicas de `assets/audio/` e deixa tocando em
 loop. Para mexer nisso:
