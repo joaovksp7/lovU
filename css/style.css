@@ -2,9 +2,9 @@
    Nosso Namoro — folha de estilo única.
    Estética: azul-marinho de ponta a ponta — o céu com a lua e as nuvens lá em
    cima, o mar com as ondas e as estrelas-do-mar daí para baixo.
-   Ordem: tokens → base → céu → tela de entrada → topo do conteúdo → seções
-          → enfeites → contador → timeline → calendário → galeria → lightbox
-          → trilha → player → rodapé → responsivo.
+   Ordem: tokens → base → céu → tela de entrada → topo do conteúdo → abertura
+          → seções → enfeites → contador → timeline → calendário → galeria
+          → lightbox → trilha → player → rodapé → responsivo.
    Regra do projeto: usar sempre os tokens do :root, nunca hex solto.
 
    A decoração sai de um único desenho em assets/elementos/ — a estrela-do-mar,
@@ -111,7 +111,14 @@ body {
   font-size: 1rem;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+
+  /* As duas linhas são a MESMA coisa para os enfeites que passam da borda —
+     mas `hidden` faz do body um contêiner de scroll, e aí o `position: sticky`
+     do quadro do abraço (bloco 4C) nunca cola: a máscara não abriria e
+     sobrariam duas telas de vazio. `clip` recorta sem criar contêiner nenhum.
+     A primeira linha fica de reserva para Safari abaixo do 16. */
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.2; margin: 0; }
@@ -519,6 +526,154 @@ body::after {
 /* As duas estrelas pousadas na crista ficam com as outras, lá no bloco 6 —
    é lá que mora a pose de toda estrela solta da página. */
 
+/* ------- 4C. A ABERTURA: O RECADO E A MÁSCARA QUE ABRE AO ROLAR -----------
+   A primeira seção depois do clique: o recado grande, a setinha de rolar e,
+   embaixo, o quadro do abraço.
+
+   A mecânica são três peças, e quem as cria é o js/scroll-mask.js:
+     .smask           a PISTA  — alta de propósito: é ela que dá o que rolar
+     .smask__palco    o PALCO  — fica preso no topo enquanto a pista passa
+     .smask__quadro   o QUADRO — recorta, arredonda e guarda a mídia
+   A máscara em si vai no .smask__mascara, reescrita quadro a quadro pelo JS.
+   Aqui não há nenhum `mask-image`: só o lugar onde ele vai cair.
+   -------------------------------------------------------------------------- */
+/* Classe dobrada de propósito (.secao.secao--abraco em vez de só
+   .secao--abraco): este bloco vem ANTES do bloco 5, e lá `.secao` reescreve o
+   `padding` inteiro no atalho. Sem o empate desfeito, o padding-bottom voltava.
+   Vale o mesmo para o recado contra o `.secao__titulo`. */
+.secao.secao--abraco { padding-bottom: 0; }
+
+.secao--abraco .abraco__recado { margin-bottom: .45rem; }
+
+/* A setinha é o ::after, e é só ela que sobe e desce — o texto fica quieto,
+   que piscar letra é cansativo de ler. */
+.abraco__dica {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  color: var(--texto-suave);
+  font-size: .78rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.abraco__dica:empty { display: none; }
+
+.abraco__dica::after {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-right: 1.6px solid var(--azul-luar);
+  border-bottom: 1.6px solid var(--azul-luar);
+  animation: dica-desce 2.4s ease-in-out infinite;
+}
+
+@keyframes dica-desce {
+  0%, 100% { transform: rotate(45deg) translate(0, 0);     opacity: .45; }
+  50%      { transform: rotate(45deg) translate(3px, 3px); opacity: 1; }
+}
+
+.abraco__quadro { margin-top: clamp(1.4rem, 4vw, 2.4rem); }
+
+/* sem JS o quadro fica vazio: ele some, em vez de abrir duas telas de buraco */
+.abraco__quadro:empty { display: none; }
+
+/* --- a pista: uma tela (o palco) mais a corrida que o JS pediu ----------- */
+.smask {
+  position: relative;
+  height: calc((1 + var(--corrida, 1.7)) * 100vh);
+}
+
+.smask__palco {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: clamp(.5rem, 2.5vw, 1.5rem) 0;
+}
+
+/* svh em vez de vh: no iPhone a barra de endereço entra e sai e o vh pula
+   junto — a pista mudaria de altura no meio da rolagem */
+@supports (height: 100svh) {
+  .smask { height: calc((1 + var(--corrida, 1.7)) * 100svh); }
+  .smask__palco { height: 100svh; }
+}
+
+.smask__quadro {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--smask-raio, 18px);
+  /* o canto e a cor de fundo vêm do JS: os knobs `raio` e `fundo` */
+}
+
+.smask__mascara {
+  position: absolute;
+  inset: 0;
+  /* as quatro propriedades mask-* são escritas pelo JS a cada quadro */
+}
+
+.smask__midia {
+  width: 100%;
+  height: 100%;
+  transform-origin: center;
+  /* o object-fit vem do JS: o knob `encaixe` */
+}
+
+.smask__veu {
+  position: absolute;
+  inset: 0;
+  background: var(--marinho-fundo);
+  pointer-events: none;
+}
+
+/* Sem `position: sticky` (navegador antigo), ou para quem pede menos
+   movimento: a pista deixa de ser alta, o palco solta do topo e o quadro vira
+   uma mídia comum. Nesse caso o JS já entrega a máscara aberta de saída. */
+.smask--parado { height: auto; }
+
+.smask--parado .smask__palco {
+  position: static;
+  height: clamp(320px, 68vh, 620px);
+}
+
+/* --- no desktop, o quadro cresce até cobrir a tela inteira ---------------
+   O quadro nasce do tamanho da seção: 1080px de largura por uma tela de
+   altura, o que no PC é quase um quadrado — e um vídeo deitado dentro de um
+   quadrado é cortado nas laterais. Daqui para cima ele deixa de ser caixa: a
+   pista sai da largura da seção e o quadro engorda até os 100vw enquanto a
+   máscara abre, encolhendo de volta quando o knob `saida` manda fechar.
+
+   `--expansao` (0 a 1) é escrito pelo JS a cada quadro e é o MESMO progresso
+   da máscara — as duas coisas têm de andar juntas. Só o desktop entra: no
+   celular o quadro já ocupa quase a tela toda e não haveria o que crescer.
+
+   O 100vw conta a largura da barra de rolagem, mas o `overflow-x: clip` do
+   body (bloco 1) apara a sobra sem criar barra horizontal. */
+@media (min-width: 900px) {
+  .smask--tela-cheia {
+    /* a caixa de onde ele parte: a largura útil da seção, já sem o padding */
+    --caixa: calc(min(var(--largura), 100vw) - 2.5rem);
+
+    width: 100vw;
+    margin-left: calc(50% - 50vw);   /* o full-bleed a partir da seção centrada */
+  }
+
+  /* o respiro de cima e de baixo vai secando até o quadro encostar nas bordas */
+  .smask--tela-cheia .smask__palco {
+    padding: calc(clamp(.5rem, 2.5vw, 1.5rem) * (1 - var(--expansao, 0))) 0;
+  }
+
+  .smask--tela-cheia .smask__quadro {
+    width: calc(var(--caixa) + (100vw - var(--caixa)) * var(--expansao, 0));
+    border-radius: calc(var(--smask-raio, 18px) * (1 - var(--expansao, 0)));
+  }
+}
+
 /* ------------------------------- 5. SEÇÕES ------------------------------- */
 .secao {
   position: relative;   /* âncora dos enfeites de canto */
@@ -840,18 +995,6 @@ body::after {
   padding: 0;
 }
 
-/* a linha central — o caule que sobe */
-.timeline::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 2px;
-  margin-left: -1px;
-  background: linear-gradient(180deg, transparent, var(--folha) 12%, var(--folha) 88%, transparent);
-}
-
 .marco {
   position: relative;
   width: 50%;
@@ -861,6 +1004,32 @@ body::after {
 .marco:nth-child(even) {
   margin-left: 50%;
   text-align: left;
+}
+
+/* O caule que sobe. Não é uma linha só desenhada na .timeline: é um PEDAÇO
+   por marco, encostado na borda que dá no centro (a direita nos ímpares, a
+   esquerda nos pares). Como cada marco desenha o seu, o marco que atravessa
+   a timeline (.marco--corte) simplesmente não desenha nada — e é assim que o
+   caule fica cortado, sem ninguém precisar medir nada em JS.
+   O `top: 0; bottom: 0` cobre também o recuo de baixo, então um pedaço
+   emenda no outro sem falha. */
+.marco::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -1px;
+  width: 2px;
+  background: var(--folha);
+}
+.marco:nth-child(even)::after { right: auto; left: -1px; }
+
+/* o caule nasce e morre desmanchando no azul, como antes */
+.marco:first-child::after {
+  background: linear-gradient(180deg, transparent, var(--folha) 34%);
+}
+.marco:last-child::after {
+  background: linear-gradient(180deg, var(--folha) 62%, transparent);
 }
 
 /* cada marco é uma estrela-do-mar pousada no caule — e nenhuma delas cai
@@ -906,6 +1075,138 @@ body::after {
   margin-left: auto;
 }
 .marco:nth-child(even) .marco__foto { margin-left: 0; margin-right: auto; }
+
+/* --------------------- 8b. O MARCO CROMÁTICO (a virada) -------------------
+   O marco com `destaque: true` troca a miniatura por uma <canvas> WebGL
+   (js/croma-card.js). Aqui só se reserva o espaço dela: o desenho, o giro, o
+   zoom e a cor saem todos do shader, nenhum deles do CSS.
+
+   O cartão é 5x6 (cardWidth/cardHeight do painel), mas a TELA é 7/8: ela
+   precisa ser mais larga que ele. Com 5/6 a lateral do cartão, já crescido e
+   empurrado para o canto, ficava a 0.008 unidade da borda do enquadramento —
+   ou seja, cortava. Com 7/8 sobra folga para girar, crescer e deslizar. */
+.marco--croma .croma {
+  display: block;
+  width: 100%;
+  /* Bem maior que a foto de um marco comum (260px): este é o marco que tem
+     que puxar o olho. O teto real: a timeline tem 860px, o marco fica com
+     metade (430) e o recuo de 1.4rem abaixo come 44,8 — sobram 385. */
+  max-width: 380px;
+  aspect-ratio: 7 / 8;
+  margin: .9rem 0 0 auto;
+  /* enquanto a textura não subiu para a placa de vídeo não há o que mostrar */
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+/* o recuo padrão do marco (2.6rem de cada lado) deixaria só 347px para o
+   cartão. Aqui ele encolhe para o cartão poder crescer — é o único marco
+   que faz isso, e é de propósito: o destaque avança mais para o centro. */
+.marco--croma { padding-left: 1.4rem; padding-right: 1.4rem; }
+
+.marco--croma .croma--pronto,
+.marco--croma .croma--sem-webgl { opacity: 1; }
+
+.marco:nth-child(even) .croma { margin-left: 0; margin-right: auto; }
+
+.croma__tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* a sombra tem que seguir o canto que o shader recorta, e box-shadow
+     seguiria o quadrado da <canvas> — por isso drop-shadow. Sem moldura e
+     sem halo: quem destaca o cartão é o tamanho dele e a profundidade. */
+  filter: drop-shadow(0 18px 40px rgba(3, 10, 24, .6));
+  /* rolar a página com o dedo por cima do cartão continua funcionando */
+  touch-action: pan-y;
+}
+
+/* sem WebGL, ou aberto por duplo-clique: vira um marco comum */
+.croma--sem-webgl { aspect-ratio: auto; }
+.croma--sem-webgl .marco__foto { margin-top: 0; }
+
+.marco--croma .marco__titulo { color: var(--estrela); }
+
+/* --------------------- 8c. O MARCO QUE CORTA A TIMELINE -------------------
+   O marco com `corte: true` sai de um dos lados e ocupa a largura inteira:
+   a data, o título e a foto atravessam o caule e o partem em dois. Ele não
+   desenha o próprio pedaço de caule (é o corte) nem a estrela-do-mar do
+   lado (não há lado nenhum para ela pousar). */
+.marco--corte {
+  width: 100%;
+  margin-left: 0;
+  padding: 1.2rem 1.4rem 3.4rem;
+  text-align: center;
+}
+.marco.marco--corte::before,
+.marco.marco--corte::after { display: none; }
+
+/* a data ganha a serifada em itálico — destaque, mas abaixo do título */
+.marco--corte .marco__data {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.05rem, 3.4vw, 1.35rem);
+  letter-spacing: .03em;
+  text-transform: none;
+  margin-bottom: .35rem;
+}
+
+/* o maior destaque da timeline inteira — e o texto que vira partículas */
+.marco--corte .marco__titulo {
+  font-size: clamp(2.2rem, 9vw, 3.4rem);
+  line-height: 1.16;
+  margin-bottom: .55rem;
+}
+
+.marco--corte .marco__descricao {
+  max-width: 46ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* sem lado para escolher: o cartão cromático fica no meio */
+.marco--corte .croma,
+.marco:nth-child(even).marco--corte .croma {
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ------------------- 8d. O TÍTULO FEITO DE PARTÍCULAS ---------------------
+   A <canvas> que o js/particle-text.js põe no lugar do <h3>. Aqui só se
+   reserva o espaço: a fonte, o tamanho e a cor das partículas são LIDOS do
+   <h3> acima, e o desenho todo sai do shader.
+
+   A altura vem do JS (ele é quem sabe em quantas linhas o texto coube), e
+   até a primeira medida a caixa fica invisível — o <h3> de verdade continua
+   à mostra até lá, então não há buraco nem pulo no lugar do título. */
+.particulas {
+  display: block;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+.particulas--pronto { opacity: 1; }
+
+.particulas__tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* rolar a página com o dedo por cima do título continua funcionando */
+  touch-action: pan-y;
+}
+
+/* o <h3> que saiu da tela mas continua no lugar dele para leitor de tela */
+.so-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
 
 /* ----------------------------- 9. CALENDÁRIO ----------------------------- */
 .cal {
@@ -1380,7 +1681,8 @@ body::after {
   .trilha__botao { width: 38px; height: 38px; }
 
   /* a timeline vira coluna única, com a linha à esquerda */
-  .timeline::before { left: 9px; margin-left: 0; }
+  .marco::after,
+  .marco:nth-child(even)::after { left: 9px; right: auto; }
 
   .marco,
   .marco:nth-child(even) {
@@ -1400,6 +1702,14 @@ body::after {
 
   .marco__foto,
   .marco:nth-child(even) .marco__foto { margin-left: 0; margin-right: auto; }
+
+  /* na coluna única o cartão cromático ocupa a largura que sobrou */
+  .marco--croma .croma { max-width: 100%; margin-left: 0; margin-right: auto; }
+
+  /* o marco que corta não tem recuo à esquerda: é ele que ocupa a faixa
+     inteira, do caule cortado até a outra borda */
+  .marco--corte { padding: .8rem .2rem 3rem; }
+  .marco--corte .croma { max-width: 100%; margin-left: auto; margin-right: auto; }
 
   .galeria { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; }
 
@@ -1440,4 +1750,14 @@ body::after {
   /* nada de aparecer deslizando: o conteúdo já nasce no lugar */
   .com-js [data-revelar] { opacity: 1; transform: none; }
   .galeria__item:hover img { transform: none; }
+
+  /* o cartão cromático desenha um quadro só, parado e sem efeito nenhum —
+     quem decide isso é o croma-card.js, que lê esta mesma preferência.
+     Aqui fica só a aparição dele, que passa a ser imediata. */
+  .marco--croma .croma { transition: none; }
+
+  /* o mesmo vale para o título de partículas: um quadro só, com o texto já
+     formado. Quem decide isso é o particle-text.js, que lê esta preferência —
+     aqui fica só a aparição, que passa a ser imediata. */
+  .particulas { transition: none; }
 }

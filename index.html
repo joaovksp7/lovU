@@ -66,6 +66,19 @@
     <span class="enfeite enfeite--estrela-mar-dir"></span>
   </div>
 
+  <!-- ==================== ABERTURA: O RECADO E O ABRAÇO ====================
+       A primeira seção depois do clique. O recado e a mídia saem do objeto
+       `abertura` em data/momentos.js; quem monta a máscara que abre ao rolar é
+       o js/abertura.js, usando o componente do js/scroll-mask.js.
+
+       O quadro nasce vazio de propósito: sem JS não há máscara, e aí o CSS
+       esconde a caixa em vez de deixar um buraco de duas telas na página. -->
+  <section class="secao secao--abraco" id="secaoAbraco">
+    <h2 class="secao__titulo abraco__recado" id="abracoRecado">&nbsp;</h2>
+    <p class="abraco__dica" id="abracoDica"></p>
+    <div class="abraco__quadro" id="abracoQuadro"></div>
+  </section>
+
   <!-- ==================== TRILHA ====================
        Nasce escondida: quem a mostra é o js/trilha.js, depois de sortear a
        música e a foto. Sem JS não há trilha, e a barra não aparece vazia. -->
@@ -101,7 +114,7 @@
     <div class="contador">
       <article class="cartao cartao--principal">
         <span class="coracao-pulsa" aria-hidden="true"></span>
-        <span class="cartao__rotulo">Namoro</span>
+        <span class="cartao__rotulo">Dias namorando</span>
         <strong class="cartao__numero" id="diasNamoro">—</strong>
         <span class="cartao__unidade">dias</span>
         <span class="cartao__desde">desde 22 de maio de 2026</span>
@@ -190,6 +203,10 @@
 <script src="data/momentos.js"></script>
 <script src="js/lightbox.js"></script>
 <script src="js/contador.js"></script>
+<script src="js/croma-card.js"></script>
+<script src="js/particle-text.js"></script>
+<script src="js/scroll-mask.js"></script>
+<script src="js/abertura.js"></script>
 <script src="js/timeline.js"></script>
 <script src="js/calendario.js"></script>
 <script src="js/galeria.js"></script>

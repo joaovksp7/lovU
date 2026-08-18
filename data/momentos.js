@@ -14,6 +14,41 @@ const casal = {
 };
 
 /* --------------------------------------------------------------------------
+   1b. A abertura — a primeira seção depois do clique no "Entrar"
+
+   "recado" é a frase grande lá no alto. "dica" é o empurrãozinho para ela
+   rolar (deixe em "" para esconder a setinha).
+
+   "video" é o identificador da mídia do abraço, sem pasta e sem extensão,
+   igual ao resto do site: o .mp4 mora em assets/fotos/. Deixar vazio faz a
+   seção ficar só com o recado, sem quadro nenhum.
+
+   "mascara" escolhe como a mídia é revelada ao rolar. As seis:
+     "iris"     círculo abrindo do centro       "slats"   faixas horizontais
+     "wipe"     varredura em diagonal           "grid"    grade florescendo
+     "curtain"  cortinas abrindo do meio        "type"    a palavra virando janela
+   Para afinar cada uma (pluma, zoom, atraso, colunas...), o painel é o
+   PADRAO no topo de js/scroll-mask.js.
+   -------------------------------------------------------------------------- */
+const abertura = {
+  recado: "Aumenta o volume, mor!",
+  dica: "role para baixo",
+
+  /* >>> TROCAR pelo vídeo do abraço quando o arquivo chegar. <<<
+     Por enquanto aponta para o vídeo que já existe, só para o efeito poder
+     ser visto e testado. Salve o novo como assets/fotos/video-002.mp4,
+     escreva "video-002" aqui e acrescente o mesmo id na lista `fotos`
+     abaixo se você também quiser ele na galeria. */
+  video: "video-002",
+  descricao: "O nosso abraço",
+
+  mascara: "iris",
+
+  /* a palavra que vira janela — só a máscara "type" usa; as outras ignoram */
+  palavra: "ABRAÇO"
+};
+
+/* --------------------------------------------------------------------------
    2. Todas as mídias, na ordem em que aparecem na galeria.
 
    Use só o identificador (sem pasta e sem extensão) — o código monta sozinho
@@ -66,7 +101,7 @@ const fotosPorDia = {
   "2025-12-15": ["foto-086"],
   "2025-12-25": ["foto-087", "foto-088"],
   "2025-12-26": ["foto-089"],
-  "2026-05-22": ["foto-002"]
+  "2025-12-31": ["foto-002"]
 };
 
 /* --------------------------------------------------------------------------
@@ -89,12 +124,22 @@ const frasesPorDia = {
   "2025-10-26": "Baita dia de Oktober, lembra dessa foto?",
   "2025-12-15": "Dia de piscina.",
   "2025-12-25": "Merry Christmas!",
-  "2025-12-26": "Festa pré-praia e o melhor expediente não remunerado que já tive."
+  "2025-12-26": "Festa pré-praia e o melhor expediente não remunerado que já tive.",
+  "2025-12-31": "A virada de chave: o brinde que abriu 2026 com você do meu lado.",
+  "2026-05-22": "O dia em que a gente parou de enrolar e virou namoro de verdade."
 };
 
 /* --------------------------------------------------------------------------
    4. Os marcos da timeline.
    "foto" é opcional — se não quiser imagem no marco, apague a linha.
+
+   "destaque: true" também é opcional: o marco vira o cartão cromático, com
+   a borda girando e o brilho colorido seguindo o dedo. É para UM marco só —
+   se todos brilharem, nenhum brilha.
+
+   "corte: true" é o outro opcional: o marco sai de um dos lados e atravessa a
+   timeline inteira, cortando o caule em dois, com o título feito de partículas.
+   Também é para UM marco só, pelo mesmo motivo.
    -------------------------------------------------------------------------- */
 const timeline = [
   {
@@ -153,10 +198,17 @@ const timeline = [
     foto: "foto-089"
   },
   {
+    data: "2025-12-31",
+    titulo: "A Virada de Chave",
+    descricao: "O brinde que abriu 2026 — e nada depois dessa noite foi igual.",
+    foto: "foto-002",
+    destaque: true,
+    corte: true
+  },
+  {
     data: "2026-05-22",
     titulo: "Oficializamos",
-    descricao: "O dia em que a gente parou de enrolar e virou namoro de verdade.",
-    foto: "foto-002"
+    descricao: "O dia em que a gente parou de enrolar e virou namoro de verdade."
   }
   // Novo marco? É só copiar um bloco acima e mudar os campos.
 ];
