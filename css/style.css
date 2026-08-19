@@ -631,6 +631,54 @@ body::after {
   pointer-events: none;
 }
 
+/* O bilhete que passa por cima da mídia (o knob `aviso` do scroll-mask.js).
+   Nasce invisível: quem o acende, e quem o apaga cinco segundos depois, é o
+   JS trocando a classe --visivel. Fica no pé do quadro para não cobrir o
+   rosto de ninguém, e `pointer-events: none` para nunca roubar um toque.
+   Sem caixa nenhuma atrás: o texto fica solto sobre o vídeo, e quem segura a
+   leitura num quadro claro é o text-shadow das linhas, ali embaixo.
+   Quem pede menos movimento já ganha a troca sem transição, pelo bloco geral
+   do prefers-reduced-motion lá no fim da folha. */
+.smask__aviso {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: clamp(1.1rem, 5vh, 2.6rem);
+  transform: translate(-50%, .6rem);
+
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  width: min(90%, 30rem);
+  margin: 0;
+  padding: 0 clamp(.6rem, 3vw, 1rem);
+  text-align: center;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transicao), transform var(--transicao);
+}
+
+.smask__aviso--visivel { opacity: 1; transform: translate(-50%, 0); }
+
+/* a primeira linha é a frase; as de baixo são o recado miúdo. A sombra é o
+   que faz as duas se sustentarem sozinhas em cima de um quadro claro. */
+.smask__aviso__linha {
+  text-shadow: 0 1px 3px var(--veu), 0 2px 14px var(--veu);
+}
+
+.smask__aviso__linha:first-child {
+  font-family: var(--serif);
+  font-size: clamp(1rem, 3.6vw, 1.2rem);
+  color: var(--luar);
+}
+
+.smask__aviso__linha + .smask__aviso__linha {
+  font-size: clamp(.8rem, 3vw, .92rem);
+  color: var(--luar);
+  opacity: .88;
+}
+
 /* Sem `position: sticky` (navegador antigo), ou para quem pede menos
    movimento: a pista deixa de ser alta, o palco solta do topo e o quadro vira
    uma mídia comum. Nesse caso o JS já entrega a máscara aberta de saída. */
@@ -1020,16 +1068,16 @@ body::after {
   bottom: 0;
   right: -1px;
   width: 2px;
-  background: var(--folha);
+  background: var(--estrela);
 }
 .marco:nth-child(even)::after { right: auto; left: -1px; }
 
 /* o caule nasce e morre desmanchando no azul, como antes */
 .marco:first-child::after {
-  background: linear-gradient(180deg, transparent, var(--folha) 34%);
+  background: linear-gradient(180deg, transparent, var(--estrela) 34%);
 }
 .marco:last-child::after {
-  background: linear-gradient(180deg, var(--folha) 62%, transparent);
+  background: linear-gradient(180deg, var(--estrela) 62%, transparent);
 }
 
 /* cada marco é uma estrela-do-mar pousada no caule — e nenhuma delas cai

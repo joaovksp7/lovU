@@ -169,8 +169,10 @@ movimento no sistema recebe o título já formado e parado.
 
 ### 5. Trocar as músicas da trilha
 
-A página sorteia **uma** das músicas de `assets/audio/` e deixa tocando em
-loop. Para mexer nisso:
+A página toca **uma** das músicas de `assets/audio/` em loop: sempre a
+**primeira do array `trilha`** — hoje "Mystery of Love". As outras continuam à
+mão nas setinhas da barra. Trocar a música de abertura é subir o bloco dela
+para o topo do array; nada no código precisa mudar. Para acrescentar uma:
 
 1. Salve o MP3 em `assets/audio/` como `musica-004.mp3` (siga a numeração).
 2. Acrescente um bloco no array `trilha`:
@@ -182,12 +184,13 @@ loop. Para mexer nisso:
 `titulo` e `artista` são o que aparece na faixa. No lugar da capa do álbum a
 página põe uma foto nossa sorteada, então não precisa de imagem.
 
-> Cada MP3 pesa 6–10 MB em 320kbps. Só o sorteado é baixado, mas se quiser
+> Cada MP3 pesa 6–10 MB em 320kbps. Só o que toca é baixado, mas se quiser
 > aliviar, um conversor online resolve — 128kbps já é mais que suficiente aqui.
 
 ### 6. Trocar o vídeo do abraço (a máscara do topo)
 
-A primeira seção depois do "Entrar" traz o recado grande e, logo abaixo, um
+A primeira seção depois do "Entrar" — logo abaixo da barra da trilha, que
+abre a página — traz o recado grande e, embaixo dele, um
 quadro que **abre conforme ela rola** e revela um vídeo. Tudo isso sai do
 objeto `abertura`, no topo do `data/momentos.js`:
 
@@ -198,7 +201,12 @@ const abertura = {
   video: "video-001",
   descricao: "O nosso abraço",
   mascara: "iris",
-  palavra: "ABRAÇO"
+  palavra: "ABRAÇO",
+  aviso: [
+    "Alguns vídeos ficaram cortados rs",
+    "Mas tudo foi feito com muito amor e carinho!"
+  ],
+  avisoSegundos: 5
 };
 ```
 
@@ -207,6 +215,11 @@ Para pôr o vídeo do abraço no lugar:
 1. Salve o arquivo como `assets/fotos/video-002.mp4` (siga a numeração).
 2. Troque `video: "video-001"` por `video: "video-002"`.
 3. Se você quiser ele também na galeria, acrescente `"video-002"` no array `fotos`.
+
+`aviso` é o bilhetinho que passa **por cima do vídeo**: uma linha por item da
+lista, a primeira maior. Ele só acende quando a máscara termina de abrir, fica
+`avisoSegundos` na tela (5 por padrão) e some sozinho — de uma vez só, não volta
+a cada rolada. Para desligar, deixe `aviso: []`.
 
 O vídeo toca **mudo**, em loop, e só começa quando a seção entra na tela — a
 trilha já está tocando, e dois áudios juntos brigariam. Uma foto serve no lugar
@@ -271,8 +284,8 @@ assets/audio/         musica-NNN.mp3 — a trilha que toca no celular
 ## Detalhes que importam
 
 - **Datas sempre em `AAAA-MM-DD`**, em qualquer lugar do projeto.
-- **A música começa no clique do "Entrar"**: uma das músicas de `assets/audio/`,
-  sorteada, em loop, igual no computador e no celular. O player do Spotify lá
+- **A música começa no clique do "Entrar"**: a primeira do array `trilha`,
+  em loop, igual no computador e no celular. O player do Spotify lá
   embaixo é só para ver e abrir a playlist — ele não toca sozinho, e sem
   Premium logado toca prévias de 30 segundos.
 - **O volume sai em 30% do original**, para não estourar no fone. Para mudar,

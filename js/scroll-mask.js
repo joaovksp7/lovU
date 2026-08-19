@@ -22,7 +22,9 @@
      ScrollMask.montar(elemento, { src, alt, variante, ...ajustes })
 
    O que NÃO veio da versão React: `children` / `revealContent` (conteúdo
-   escrito por cima da mídia). Aqui o recado mora fora do quadro, na seção.
+   escrito por cima da mídia). Aqui o recado mora fora do quadro, na seção —
+   por cima da mídia só passa o `aviso`, um bilhete de poucas linhas que
+   aparece quando a máscara termina de abrir e some sozinho.
 
    >>> ATENÇÃO, file:// <<<
    Ao contrário do croma-card, aqui não há WebGL nem textura indo para a placa
@@ -65,6 +67,13 @@ var ScrollMask = (function () {
        animação com que entrou. 0 desliga — o quadro fica aberto até o fim.
        Só faz sentido acima de `assenta`: entre os dois é que ela vê tudo. */
     saida:     0,
+
+    /* Um bilhete escrito POR CIMA da mídia — uma linha por item da lista, a
+       primeira sai maior. Ele só acende quando a máscara já abriu (a mídia
+       inteira à vista), fica `avisoSegundos` na tela e desaparece; depois
+       disso não volta mais, nem se ela rolar de novo. Lista vazia desliga. */
+    aviso:         [],
+    avisoSegundos: 5,
 
     /* No desktop, o quadro deixa de ser uma caixa da largura da seção e cresce
        até cobrir a tela inteira, junto com a máscara. Aqui isso só acende a
@@ -364,6 +373,22 @@ var ScrollMask = (function () {
     }
 
     quadro.appendChild(mascara);
+
+    /* O aviso entra no QUADRO, irmão da máscara e não filho dela: lá dentro o
+       mesmo recorte que abre a mídia comeria o texto junto. */
+    var aviso = null;
+    if (o.aviso && o.aviso.length) {
+      aviso = document.createElement("p");
+      aviso.className = "smask__aviso";
+      for (var i = 0; i < o.aviso.length; i++) {
+        var linha = document.createElement("span");
+        linha.className = "smask__aviso__linha";
+        linha.textContent = o.aviso[i];
+        aviso.appendChild(linha);
+      }
+      quadro.appendChild(aviso);
+    }
+
     palco.appendChild(quadro);
     pista.appendChild(palco);
 
@@ -382,6 +407,7 @@ var ScrollMask = (function () {
     var anterior = -1;     /* o último desenhado, para não redesenhar à toa  */
     var visivel = false;
     var rodando = false;
+    var avisoFeito = false;   /* o bilhete é de uma vez só, não de toda rolada */
 
     /* o quanto da pista já passou: 0 quando o topo dela encosta no topo da
        tela, 1 quando o pé dela encosta no pé */
@@ -404,6 +430,19 @@ var ScrollMask = (function () {
 
       var fecha = limitar((bruto - o.saida) / Math.max(0.05, 1 - o.saida), 0, 1);
       return abre * (1 - fecha);
+    }
+
+    /* Acende o bilhete quando a máscara já está praticamente aberta — antes
+       disso ele flutuaria sobre um quadro ainda fechado. Um relógio só, e o
+       CSS cuida do sumiço. */
+    function cuidarDoAviso(p) {
+      if (!aviso || avisoFeito) return;
+      if (!visivel || p < 0.9) return;
+      avisoFeito = true;
+      aviso.classList.add("smask__aviso--visivel");
+      window.setTimeout(function () {
+        aviso.classList.remove("smask__aviso--visivel");
+      }, Math.max(0, o.avisoSegundos) * 1000);
     }
 
     function cuidarDoVideo(p) {
@@ -448,6 +487,7 @@ var ScrollMask = (function () {
 
       aplicar(atual);
       cuidarDoVideo(atual);
+      cuidarDoAviso(atual);
       window.requestAnimationFrame(laco);
     }
 
@@ -464,10 +504,12 @@ var ScrollMask = (function () {
         new IntersectionObserver(function (entradas) {
           visivel = entradas[0].isIntersecting;
           cuidarDoVideo(1);
+          cuidarDoAviso(1);
         }, { threshold: 0.15 }).observe(pista);
       } else {
         visivel = true;
         cuidarDoVideo(1);
+        cuidarDoAviso(1);
       }
       return { elemento: pista, midia: midia };
     }

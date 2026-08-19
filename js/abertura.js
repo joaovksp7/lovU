@@ -10,6 +10,9 @@
 
    Sem `abertura.video` preenchido, o quadro simplesmente não é montado — a
    seção fica só com o recado, sem buraco nem imagem quebrada.
+
+   O bilhete que passa por cima do vídeo (`abertura.aviso`) também sai de lá:
+   aqui é só a fiação, como todo o resto.
    ========================================================================== */
 (function () {
   "use strict";
@@ -38,6 +41,10 @@
       src:      Lightbox.caminho(abertura.video),
       alt:      abertura.descricao || "",
       palavra:  abertura.palavra || undefined,   /* só a máscara "type" usa */
+
+      /* o bilhete por cima do vídeo; sem `abertura.aviso` o quadro fica limpo */
+      aviso:         abertura.aviso || [],
+      avisoSegundos: abertura.avisoSegundos,
 
       /* Os ajustes desta seção; o resto vem do PADRAO do scroll-mask.js —
          pluma, zoom, veu, colunas e companhia estão todos lá, com os nomes

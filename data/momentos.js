@@ -45,7 +45,17 @@ const abertura = {
   mascara: "iris",
 
   /* a palavra que vira janela — só a máscara "type" usa; as outras ignoram */
-  palavra: "ABRAÇO"
+  palavra: "ABRAÇO",
+
+  /* O bilhetinho que aparece POR CIMA do vídeo assim que ele começa a tocar e
+     some sozinho depois. Cada item da lista é uma linha; a primeira sai maior.
+     Lista vazia ([]) desliga o aviso, e "avisoSegundos" é quanto tempo ele
+     fica na tela antes de desaparecer. */
+  aviso: [
+    "Alguns vídeos ficaram cortados rs",
+    "Mas tudo foi feito com muito amor e carinho!"
+  ],
+  avisoSegundos: 5
 };
 
 /* --------------------------------------------------------------------------
@@ -199,15 +209,27 @@ const timeline = [
   },
   {
     data: "2025-12-31",
-    titulo: "A Virada de Chave",
-    descricao: "O brinde que abriu 2026 — e nada depois dessa noite foi igual.",
+    titulo: "Finalmente Praia!",
+    descricao: "O brinde que abriu 2026. Depois desse dia, a gente não se desgrudou mais.",
     foto: "foto-002",
     destaque: true,
     corte: true
   },
   {
+    data: "2026-01-05",
+    titulo: "Praia com minha família",
+    descricao: "Uma semaninha de farra e uma semaninha de descanso.",
+    foto: "foto-096"
+  },
+  {
+    data: "2026-01-05",
+    titulo: "Praia com minha família",
+    descricao: "Uma semaninha de farra e uma semaninha de descanso.",
+    foto: "foto-096"
+  },
+  {
     data: "2026-05-22",
-    titulo: "Oficializamos",
+    titulo: "Pedido Oficial!",
     descricao: "O dia em que a gente parou de enrolar e virou namoro de verdade."
   }
   // Novo marco? É só copiar um bloco acima e mudar os campos.
@@ -218,7 +240,11 @@ const timeline = [
 
    No computador quem toca é o player do Spotify. No celular ele não pode
    (o navegador recusa dar play num iframe de outro domínio), então a página
-   sorteia UMA destas músicas e deixa tocando em loop.
+   toca UMA destas músicas em loop.
+
+   A ORDEM IMPORTA: a PRIMEIRA da lista é sempre a que começa no clique do
+   "Entrar". As outras continuam aqui, ao alcance das setinhas da barra. Para
+   trocar a música de abertura, é só subir o bloco dela para o topo.
 
    "arquivo" é só o nome, sem pasta e sem extensão — o .mp3 mora em
    assets/audio/. "titulo" e "artista" são o que aparece na barra do topo.
@@ -228,7 +254,9 @@ const timeline = [
      b) acrescente um bloco aqui com o nome do arquivo, o título e o artista
    -------------------------------------------------------------------------- */
 const trilha = [
+  /* a que abre a página */
+  { arquivo: "musica-003", titulo: "Mystery of Love",                   artista: "Sufjan Stevens" },
+
   { arquivo: "musica-001", titulo: "Todo o Amor Que Houver Nessa Vida", artista: "Cazuza" },
-  { arquivo: "musica-002", titulo: "Um Girassol da Cor do Seu Cabelo",  artista: "Lô Borges" },
-  { arquivo: "musica-003", titulo: "Mystery of Love",                   artista: "Sufjan Stevens" }
+  { arquivo: "musica-002", titulo: "Um Girassol da Cor do Seu Cabelo",  artista: "Lô Borges" }
 ];

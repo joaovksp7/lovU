@@ -1,10 +1,12 @@
 /* ==========================================================================
    trilha.js — a música da página, na faixa que abre o conteúdo.
 
-   Uma das músicas de assets/audio/, sorteada, em loop, começando no clique
-   do "Entrar" — o app.js chama Trilha.iniciar() de dentro do gesto, porque
-   o iPhone só aceita áudio que nasce assim. No lugar da capa do álbum entra
-   uma foto nossa, também sorteada.
+   A PRIMEIRA música da lista `trilha` (data/momentos.js), em loop, começando
+   no clique do "Entrar" — o app.js chama Trilha.iniciar() de dentro do gesto,
+   porque o iPhone só aceita áudio que nasce assim. A faixa de abertura é fixa
+   de propósito: quem escolhe qual é são as mãos que ordenam a lista, não o
+   acaso. As outras entram pelas setinhas. No lugar da capa do álbum entra uma
+   foto nossa, essa sim sorteada.
 
    O volume fica em 30% do original, e NÃO por `audio.volume`: o Safari do
    iPhone ignora essa propriedade. Quem abaixa o som é um GainNode da Web
@@ -156,7 +158,7 @@ var Trilha = (function () {
     // sem músicas cadastradas a barra simplesmente não aparece
     if (typeof trilha === "undefined" || !trilha.length) return;
 
-    indice = sorteio(trilha.length);
+    indice = 0;   // sempre a primeira da lista; a ordem mora no momentos.js
     el.audio.loop = true;
     desenharFaixa();
     marcarTocando(false);
