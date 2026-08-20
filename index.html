@@ -9,7 +9,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Inter:wght@300;400;500;600&family=Pinyon+Script&display=swap">
 <link rel="stylesheet" href="css/style.css">
 
 <!-- Marca que o JS está vivo. Sem isso, um erro de script deixaria a página
@@ -21,23 +21,17 @@
 <!-- ==================== TELA DE ENTRADA ==================== -->
 <div class="entrada" id="entrada">
 
-  <!-- O céu da entrada. As estrelas, a lua e as nuvens são CSS; as
-       estrelas-do-mar são o desenho de assets/elementos, cada uma numa pose.
+  <!-- O céu da entrada. As estrelas e a lua são CSS; as nuvens são o desenho
+       de assets/elementos, cada uma numa pose.
        Tudo aqui é decoração: o bloco inteiro é aria-hidden. -->
   <div class="entrada__ceu" aria-hidden="true">
     <span class="lua"></span>
     <span class="nuvem nuvem--entrada-1"></span>
     <span class="nuvem nuvem--entrada-2 nuvem--densa"></span>
-    <span class="enfeite enfeite--estrela-baixo-esq"></span>
-    <span class="enfeite enfeite--estrela-baixo-dir"></span>
-    <span class="enfeite enfeite--estrela-cima-dir"></span>
-    <span class="enfeite enfeite--estrela-meio-esq"></span>
   </div>
 
   <div class="entrada__conteudo">
-    <p class="entrada__super">A nossa história</p>
     <h1 class="entrada__titulo" id="entradaTitulo">&nbsp;</h1>
-    <p class="entrada__frase" id="entradaFrase"></p>
     <button type="button" class="coracao" id="btnEntrar">
       <span class="coracao__texto">Entrar</span>
     </button>
@@ -48,8 +42,8 @@
 
   <!-- ==================== TOPO: A LUA, AS NUVENS E O MAR ====================
        A primeira coisa depois do clique, e só desenho — daí o aria-hidden no
-       bloco inteiro. A lua cheia entre as nuvens lá em cima, as ondas fechando
-       embaixo, e duas estrelas-do-mar pousadas na crista. -->
+       bloco inteiro. A lua cheia entre as nuvens lá em cima e as ondas
+       fechando embaixo. -->
   <div class="topo" aria-hidden="true">
     <span class="lua lua--topo"></span>
     <span class="nuvem nuvem--topo-1"></span>
@@ -61,9 +55,6 @@
       <span class="mar__onda mar__onda--meio"></span>
       <span class="mar__onda mar__onda--frente"></span>
     </div>
-
-    <span class="enfeite enfeite--estrela-mar-esq"></span>
-    <span class="enfeite enfeite--estrela-mar-dir"></span>
   </div>
 
   <!-- ==================== TRILHA ====================
@@ -101,6 +92,15 @@
        O quadro nasce vazio de propósito: sem JS não há máscara, e aí o CSS
        esconde a caixa em vez de deixar um buraco de duas telas na página. -->
   <section class="secao secao--abraco" id="secaoAbraco">
+
+    <!-- Os bichos do fundo do mar (bloco 6B do CSS). Daqui para baixo, cada
+         seção recebe os seus: <span> vazio, aria-hidden e sempre atrás do
+         conteúdo. Quem diz o tamanho, o canto e o compasso de cada um é a
+         folha de estilo — aqui só se diz QUEM está na seção.
+         Os marcados com "borda" só aparecem em tela larga, na margem que
+         sobra dos dois lados da coluna. -->
+    <span class="bicho bicho--peixe bicho--peixe-abraco" aria-hidden="true"></span>
+
     <h2 class="secao__titulo abraco__recado" id="abracoRecado">&nbsp;</h2>
     <p class="abraco__dica" id="abracoDica"></p>
     <div class="abraco__quadro" id="abracoQuadro"></div>
@@ -108,6 +108,16 @@
 
   <!-- ==================== CONTADOR ==================== -->
   <section class="secao secao--contador" id="secaoContador" data-revelar>
+
+    <span class="bicho bicho--nemo" aria-hidden="true"></span>
+    <span class="alga alga--azul alga--contador-1" aria-hidden="true"></span>
+    <span class="alga alga--vermelha alga--contador-2" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--contador-1" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--contador-2" aria-hidden="true"></span>
+    <span class="estrela-mar borda borda--esq estrela-mar--borda-contador" aria-hidden="true"></span>
+    <span class="alga alga--azul borda borda--esq alga--borda-contador" aria-hidden="true"></span>
+    <span class="bicho bicho--peixe borda borda--dir bicho--peixe-borda-contador" aria-hidden="true"></span>
+
     <h2 class="secao__titulo">Nosso contador</h2>
     <p class="secao__linha"></p>
 
@@ -127,6 +137,17 @@
 
   <!-- ==================== TIMELINE ==================== -->
   <section class="secao" id="secaoTimeline" data-revelar>
+
+    <span class="bicho bicho--dory" aria-hidden="true"></span>
+    <span class="alga alga--vermelha alga--timeline" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--timeline-1" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--timeline-2" aria-hidden="true"></span>
+    <span class="estrela-mar borda borda--dir estrela-mar--borda-timeline-1" aria-hidden="true"></span>
+    <span class="estrela-mar borda borda--esq estrela-mar--borda-timeline-2" aria-hidden="true"></span>
+    <span class="alga alga--vermelha borda borda--dir alga--borda-timeline" aria-hidden="true"></span>
+    <span class="estrela-mar borda borda--dir estrela-mar--borda-timeline-3" aria-hidden="true"></span>
+    <span class="bicho bicho--peixe borda borda--esq bicho--peixe-borda-timeline" aria-hidden="true"></span>
+
     <h2 class="secao__titulo">Os nossos marcos</h2>
     <p class="secao__linha"></p>
     <ol class="timeline" id="timelineLista"></ol>
@@ -134,6 +155,16 @@
 
   <!-- ==================== CALENDÁRIO ==================== -->
   <section class="secao" id="secaoCalendario" data-revelar>
+
+    <span class="bicho bicho--peixonauta" aria-hidden="true"></span>
+    <span class="bicho bicho--peixe bicho--peixe-calendario" aria-hidden="true"></span>
+    <span class="alga alga--azul alga--calendario" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--calendario-1" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--calendario-2" aria-hidden="true"></span>
+    <span class="estrela-mar borda borda--esq estrela-mar--borda-calendario" aria-hidden="true"></span>
+    <span class="alga alga--vermelha borda borda--esq alga--borda-calendario" aria-hidden="true"></span>
+    <span class="bicho bicho--peixe borda borda--dir bicho--peixe-borda-calendario" aria-hidden="true"></span>
+
     <h2 class="secao__titulo">Nosso calendário</h2>
     <p class="secao__subtitulo">Os dias marcados guardam alguma coisa nossa. Toca para ver.</p>
 
@@ -157,6 +188,18 @@
 
   <!-- ==================== GALERIA ==================== -->
   <section class="secao" id="secaoGaleria" data-revelar>
+
+    <span class="bicho bicho--peixe bicho--peixe-galeria" aria-hidden="true"></span>
+    <span class="alga alga--vermelha alga--galeria" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--galeria-1" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--galeria-2" aria-hidden="true"></span>
+    <span class="estrela-mar borda borda--esq estrela-mar--borda-galeria-1" aria-hidden="true"></span>
+    <span class="estrela-mar borda borda--dir estrela-mar--borda-galeria-2" aria-hidden="true"></span>
+    <span class="alga alga--azul borda borda--dir alga--borda-galeria" aria-hidden="true"></span>
+    <span class="bicho bicho--peixe borda borda--dir bicho--peixe-borda-galeria" aria-hidden="true"></span>
+    <span class="estrela-mar borda borda--esq estrela-mar--borda-galeria-3" aria-hidden="true"></span>
+    <span class="estrela-mar borda borda--dir estrela-mar--borda-galeria-4" aria-hidden="true"></span>
+
     <h2 class="secao__titulo">Todas as nossas fotos</h2>
     <p class="secao__subtitulo" id="galeriaContagem"></p>
     <div class="galeria" id="galeria"></div>
@@ -166,6 +209,15 @@
        O player do Spotify é só para ver e abrir a playlist — quem toca
        sozinho é a trilha lá de cima. -->
   <section class="secao" id="secaoMusica" data-revelar>
+
+    <span class="bicho bicho--peixe bicho--peixe-musica" aria-hidden="true"></span>
+    <span class="alga alga--azul alga--musica" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--musica-1" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--musica-2" aria-hidden="true"></span>
+    <span class="estrela-mar borda borda--esq estrela-mar--borda-musica-1" aria-hidden="true"></span>
+    <span class="estrela-mar borda borda--dir estrela-mar--borda-musica-2" aria-hidden="true"></span>
+    <span class="alga alga--vermelha borda borda--esq alga--borda-musica" aria-hidden="true"></span>
+
     <h2 class="secao__titulo">A nossa playlist</h2>
     <p class="secao__subtitulo">Todas as músicas, para ouvir com calma depois.</p>
     <div class="player">
@@ -177,7 +229,20 @@
     </div>
   </section>
 
+  <!-- O fim da página é o chão do mar. A ordem aqui importa: a areia vem
+       primeiro, e quem vier depois dela é desenhado por cima — o Gary
+       atravessando, o Bob de pé na areia, as algas plantadas e as estrelas
+       caídas. -->
   <footer class="rodape">
+    <span class="areia" aria-hidden="true"></span>
+    <span class="gary" aria-hidden="true"></span>
+    <span class="bicho bicho--bob bicho--bob-rodape" aria-hidden="true"></span>
+    <span class="alga alga--azul alga--rodape-1" aria-hidden="true"></span>
+    <span class="alga alga--vermelha alga--rodape-2" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--rodape-1" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--rodape-2" aria-hidden="true"></span>
+    <span class="estrela-mar estrela-mar--rodape-3" aria-hidden="true"></span>
+
     <span class="rodape__coracao" aria-hidden="true">&#10084;</span>
     <p id="rodapeTexto"></p>
   </footer>

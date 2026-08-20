@@ -13,11 +13,17 @@
     if (typeof casal === "undefined") return;
 
     var titulo = document.getElementById("entradaTitulo");
-    var frase  = document.getElementById("entradaFrase");
     var rodape = document.getElementById("rodapeTexto");
 
-    if (titulo) titulo.textContent = casal.nomeA + " & " + casal.nomeB;
-    if (frase)  frase.textContent = casal.frase;
+    // duas linhas fixas na entrada: o nome dela em cima, "& " + o dele embaixo.
+    // Nós de texto e um <br>, não innerHTML — os nomes vêm de dados e não
+    // precisam passar por interpretação de HTML.
+    if (titulo) {
+      titulo.textContent = "";
+      titulo.appendChild(document.createTextNode(casal.nomeA));
+      titulo.appendChild(document.createElement("br"));
+      titulo.appendChild(document.createTextNode("& " + casal.nomeB));
+    }
     if (rodape) rodape.textContent = "Feito com amor por " + casal.nomeB + "(e claudIA rs), para " + casal.nomeA + ".";
 
     document.title = casal.nomeA + " & " + casal.nomeB;
@@ -58,13 +64,20 @@
       return;
     }
 
+    /* O gatilho é o TOPO do elemento cruzando 88% da tela — não uma fatia de
+       12% dele. A diferença importa: exigir 12% do próprio elemento quebra
+       para qualquer coisa mais alta que a tela, e a seção da timeline passa
+       de 9000px. Com 12% ela precisaria mostrar 1100px de uma vez numa tela
+       de 900 — impossível, então nunca revelava e ficava invisível para
+       sempre. Assim o critério vale igual para um marco de 130px e para a
+       timeline inteira. */
     var observador = new IntersectionObserver(function (entradas) {
       entradas.forEach(function (entrada) {
         if (!entrada.isIntersecting) return;
         entrada.target.classList.add("revelado");
         observador.unobserve(entrada.target);   // revela uma vez só
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
+    }, { threshold: 0, rootMargin: "0px 0px -12% 0px" });
 
     alvos.forEach(function (alvo) { observador.observe(alvo); });
   }

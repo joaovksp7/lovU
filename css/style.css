@@ -7,10 +7,10 @@
           → lightbox → trilha → player → rodapé → responsivo.
    Regra do projeto: usar sempre os tokens do :root, nunca hex solto.
 
-   A decoração sai de um único desenho em assets/elementos/ — a estrela-do-mar,
-   repetida de seção em seção — mais as ondas, as nuvens e a lua, que são
-   feitas aqui mesmo. É sempre a mesma estrela: o que muda a cada aparição é
-   tamanho, giro e transparência.
+   A decoração sai de dois desenhos em assets/elementos/ — a estrela-do-mar,
+   repetida de seção em seção, e a nuvem, repetida no céu — mais as ondas e a
+   lua, que são feitas aqui mesmo. É sempre o mesmo desenho: o que muda a cada
+   aparição é tamanho, giro e transparência.
    ========================================================================== */
 
 /* ------------------------------- 1. TOKENS ------------------------------- */
@@ -24,6 +24,11 @@
   --azul-luar:     #7C9BCF;
   --luar:          #E8EFFC;
   --estrela:       #F2D9A0;
+
+  /* a areia do fundo, onde o Gary passeia no fim da página */
+  --areia:        #B49468;
+  --areia-escura: #6E5936;
+  --areia-clara:  #D9C097;
 
   /* o vermelho vinho que aquece o azul */
   --vinho:        #7E1E32;
@@ -41,8 +46,9 @@
   --brilho-estrela:       rgba(232, 239, 252, .95);
   --brilho-estrela-fraco: rgba(232, 239, 252, .55);
   --brilho-lua:           rgba(242, 217, 160, .30);
-  --nuvem:                rgba(232, 239, 252, .13);
-  --nuvem-densa:          rgba(232, 239, 252, .20);
+  /* a nuvem é desenho, e traz a própria cor: aqui só o quanto ela pesa no céu */
+  --nuvem-opacidade:       .40;
+  --nuvem-opacidade-densa: .58;
   --espuma:               rgba(124, 155, 207, .34);
   --vidro:                rgba(232, 239, 252, .12);
   --vidro-forte:          rgba(232, 239, 252, .26);
@@ -66,10 +72,26 @@
   /* tipografia */
   --serif: "Playfair Display", Georgia, serif;
   --sans:  "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* a caligrafia dos nomes na entrada — hoje só ela usa */
+  --manuscrita: "Pinyon Script", "Segoe Script", "Snell Roundhand", cursive;
 
-  /* O desenho. Caminho relativo a esta folha (css/), e é aqui — e só aqui —
-     que ele aparece: trocar o arquivo é mexer nesta linha. */
+  /* Os desenhos. Caminho relativo a esta folha (css/), e é aqui — e só aqui —
+     que eles aparecem: trocar o arquivo é mexer nestas linhas. */
   --estrela-mar: url("../assets/elementos/estrela-do-mar.webp");
+  --nuvem-img:   url("../assets/elementos/nuvem.webp");
+
+  /* Os bichos e as algas que povoam a descida (bloco 6B). Mesma regra da
+     estrela e da nuvem: o caminho mora aqui e em lugar nenhum mais.
+     A Dory é um .webp de 43 KB tirado do .png de 4,5 MB que veio na pasta — o
+     original continua lá, intocado, mas quem a página baixa é este. */
+  --nemo-img:          url("../assets/elementos/nemo.webp");
+  --dory-img:          url("../assets/elementos/dory.webp");
+  --peixonauta-img:    url("../assets/elementos/peixonauta.png");
+  --bob-img:           url("../assets/elementos/bob-esponja.webp");
+  --peixe-img:         url("../assets/elementos/peixe-palhaco.webp");
+  --gary-img:          url("../assets/elementos/gary.webp");
+  --alga-azul-img:     url("../assets/elementos/alga-azul.webp");
+  --alga-vermelha-img: url("../assets/elementos/alga-vermelha.webp");
 
   /* A moldura de espinhos do calendário — o desenho do tempo em que a gente
      não se falou. Mesma regra da estrela: o caminho mora só aqui. */
@@ -82,6 +104,11 @@
      que se repete de lado a lado. */
   --onda-linha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 40' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23fff' stroke-linecap='round'%3E%3Cpath d='M20 10q20-8 40 0t40 0 40 0 40 0 40 0 40 0' stroke-width='2.2' opacity='.5'/%3E%3Cpath d='M4 22q24-10 48 0t48 0 48 0 48 0 48 0 48 0' stroke-width='3'/%3E%3Cpath d='M60 33q15-7 30 0t30 0 30 0 30 0 30 0' stroke-width='2' opacity='.38'/%3E%3C/g%3E%3C/svg%3E");
   --onda-mar:   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 60' preserveAspectRatio='none'%3E%3Cpath fill='%23fff' d='M0 30q75-26 150 0t150 0 150 0 150 0V60H0Z'/%3E%3C/svg%3E");
+
+  /* A duna do rodapé: o mesmo truque das ondas, mas sem laço nenhum — é UMA
+     repetição esticada de ponta a ponta, para o fundo do mar não ficar com
+     cara de padrão carimbado. O relevo é irregular de propósito. */
+  --duna:       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 80' preserveAspectRatio='none'%3E%3Cpath fill='%23fff' d='M0 44q52-20 108-9t92 12 96-19 104-4 92 14 108-6V80H0Z'/%3E%3C/svg%3E");
 }
 
 /* -------------------------------- 2. BASE -------------------------------- */
@@ -182,7 +209,27 @@ body::before {
     radial-gradient(1.7px 1.7px at 78% 24%, var(--brilho-estrela), transparent 62%),
     radial-gradient(1.5px 1.5px at 88% 16%, var(--brilho-estrela), transparent 62%),
     radial-gradient(1.5px 1.5px at 21% 33%, var(--brilho-estrela), transparent 62%),
-    radial-gradient(1.4px 1.4px at 69% 38%, var(--brilho-estrela), transparent 62%);
+    radial-gradient(1.4px 1.4px at 69% 38%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.6px 1.6px at  2% 11%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 11%  2%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.8px 1.8px at 23% 14%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 34% 12%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.7px 1.7px at 45% 16%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 47%  2%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.6px 1.6px at 57%  8%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 66%  2%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.8px 1.8px at 76% 13%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 88%  7%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.6px 1.6px at 97% 11%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at  4% 24%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.7px 1.7px at 26% 27%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 44% 23%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.6px 1.6px at 65% 26%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 96% 22%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 41% 34%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.6px 1.6px at 87% 35%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 54% 42%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at  9% 45%, var(--brilho-estrela), transparent 62%);
   animation: cintilar 7s ease-in-out infinite;
 }
 
@@ -203,7 +250,25 @@ body::after {
     radial-gradient(1.2px 1.2px at 60% 27%, var(--brilho-estrela-fraco), transparent 60%),
     radial-gradient(1px   1px   at 86% 31%, var(--brilho-estrela-fraco), transparent 60%),
     radial-gradient(1.1px 1.1px at 45% 44%, var(--brilho-estrela-fraco), transparent 60%),
-    radial-gradient(1px   1px   at 82% 49%, var(--brilho-estrela-fraco), transparent 60%);
+    radial-gradient(1px   1px   at 82% 49%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at  3%  2%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 14%  9%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 27% 17%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 36%  6%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 52% 21%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 57%  5%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 64% 11%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 71% 22%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 79% 14%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 95%  7%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at  7% 19%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 24% 36%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 49% 33%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 73% 34%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 93% 39%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 12% 41%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 33% 47%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 66% 52%, var(--brilho-estrela-fraco), transparent 60%);
   animation: cintilar 9s ease-in-out infinite;
   animation-delay: -4s;
 }
@@ -258,7 +323,23 @@ body::after {
     radial-gradient(1.6px 1.6px at  7% 38%, var(--brilho-estrela), transparent 62%),
     radial-gradient(1.5px 1.5px at 29% 47%, var(--brilho-estrela), transparent 62%),
     radial-gradient(1.8px 1.8px at 73% 52%, var(--brilho-estrela), transparent 62%),
-    radial-gradient(1.4px 1.4px at 94% 44%, var(--brilho-estrela), transparent 62%);
+    radial-gradient(1.4px 1.4px at 94% 44%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.6px 1.6px at  3%  6%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 17% 28%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.9px 1.9px at 30%  4%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 41% 33%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.7px 1.7px at 52%  4%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 63% 18%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.8px 1.8px at 76% 12%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 86%  4%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.6px 1.6px at 97% 24%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 13% 55%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.7px 1.7px at 45% 62%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at 88% 58%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.6px 1.6px at 25% 72%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.5px 1.5px at 68% 79%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.8px 1.8px at 92% 86%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.4px 1.4px at  8% 88%, var(--brilho-estrela), transparent 62%);
   animation: cintilar 6s ease-in-out infinite;
 }
 
@@ -273,7 +354,24 @@ body::after {
     radial-gradient(1.1px 1.1px at 88% 22%, var(--brilho-estrela-fraco), transparent 60%),
     radial-gradient(1.2px 1.2px at 20% 56%, var(--brilho-estrela-fraco), transparent 60%),
     radial-gradient(1px   1px   at 62% 61%, var(--brilho-estrela-fraco), transparent 60%),
-    radial-gradient(1.1px 1.1px at 85% 66%, var(--brilho-estrela-fraco), transparent 60%);
+    radial-gradient(1.1px 1.1px at 85% 66%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at  6% 12%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 22%  8%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 37%  5%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 48% 29%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 59%  9%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 71% 30%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 82%  8%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 96% 34%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at  9% 47%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 36% 52%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 74% 68%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 47% 74%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 15% 78%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 91% 76%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.1px 1.1px at 29% 91%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1.2px 1.2px at 58% 87%, var(--brilho-estrela-fraco), transparent 60%),
+    radial-gradient(1px   1px   at 79% 94%, var(--brilho-estrela-fraco), transparent 60%);
   animation: cintilar 8s ease-in-out infinite;
   animation-delay: -3s;
 }
@@ -293,30 +391,25 @@ body::after {
     0 0 52px 12px var(--brilho-lua);
 }
 
-/* As nuvens: um comprimido arredondado com dois montes por cima (os
-   pseudo-elementos). Translúcidas, para o céu e as estrelas continuarem
-   aparecendo por trás. Cada uma deriva devagar, no seu próprio compasso —
-   a `alternate` faz o vento ir e voltar em vez de saltar de volta ao início. */
+/* As nuvens: o desenho em aquarela de assets/elementos, sempre o mesmo — o que
+   muda de uma para a outra é tamanho, lugar e compasso. O arquivo é quadrado e
+   tem margem em volta, então o `aspect-ratio: 1` com `contain` deixa a nuvem
+   ocupar a largura toda da caixa e pouco mais da metade da altura: a largura
+   que se escreve aqui é, na prática, a largura da nuvem na tela.
+   Translúcidas, para o céu e as estrelas continuarem aparecendo por trás. Cada
+   uma deriva devagar, no seu próprio compasso — a `alternate` faz o vento ir e
+   voltar em vez de saltar de volta ao início. */
 .nuvem {
   position: absolute;
   width: 130px;
-  height: 34px;
-  border-radius: 999px;
-  background: var(--nuvem);
+  aspect-ratio: 1;
+  background: var(--nuvem-img) center / contain no-repeat;
+  opacity: var(--nuvem-opacidade);
   animation: derivar 46s ease-in-out infinite alternate;
 }
-.nuvem::before,
-.nuvem::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  background: inherit;
-}
-.nuvem::before { width: 56%; aspect-ratio: 1; left: 12%; bottom: 42%; }
-.nuvem::after  { width: 38%; aspect-ratio: 1; left: 52%; bottom: 55%; }
 
 /* a nuvem densa passa na frente e esconde um pedaço da lua */
-.nuvem--densa { background: var(--nuvem-densa); }
+.nuvem--densa { opacity: var(--nuvem-opacidade-densa); }
 
 /* as duas da tela de entrada: uma cruzando a lua, outra lá do outro lado */
 .nuvem--entrada-1 {
@@ -344,61 +437,214 @@ body::after {
 .entrada__conteudo {
   position: relative;   /* acima da camada do céu */
   z-index: 1;
-  width: min(100%, 34rem);
+  /* 34rem era a medida da frase, que saiu daqui. Hoje só os nomes moram nesta
+     caixa, e é a largura dela que decide se eles cabem numa linha. */
+  width: min(100%, 42rem);
 }
 
-.entrada__super {
-  font-size: .78rem;
-  letter-spacing: .32em;
-  text-transform: uppercase;
-  color: var(--estrela);
-  opacity: .8;
-  margin-bottom: 1rem;
-}
-
+/* Os nomes sozinhos na entrada, na caligrafia — a tela é só isso e o coração.
+   Corpo maior que o da serifada porque a script tem altura de x pequena, e
+   entrelinha folgada porque as laçadas e as caudas passam muito da linha:
+   apertado, o "ç" de uma linha encosta no "L" da outra. A Pinyon Script só
+   existe em 400 — não peça peso que ela não tem, o navegador engorda o traço
+   sozinho e borra o contraste grosso/fino que é justamente a graça dela. A
+   margem de baixo é a que a frase carregava, para o coração não colar. */
 .entrada__titulo {
-  font-size: clamp(1.8rem, 7.4vw, 4rem);
+  font-family: var(--manuscrita);
+  font-weight: 400;
+  /* Cada nome numa linha só, e a ÚNICA quebra é o <br> que o app.js põe entre
+     eles. O `nowrap` sozinho não resolveria: sem baixar o corpo, em vez de
+     quebrar o nome vazaria pela lateral. O teto de 4.6rem é o que faz "Amanda
+     Letícia" caber na largura de .entrada__conteudo no desktop; o 8.4vw é o
+     que a faz caber em celular estreito. Mexer num sem olhar o outro traz a
+     quebra de volta. */
+  white-space: nowrap;
+  font-size: clamp(1.7rem, 8.4vw, 4.6rem);
+  line-height: 1.35;
   color: var(--luar);
   text-shadow: 0 0 28px var(--brilho-lua);
-  margin-bottom: .9rem;
-  text-wrap: balance;
+  margin-bottom: 2.8rem;
 }
 
-.entrada__frase {
-  max-width: 30rem;
-  margin: 0 auto 2.8rem;
-  color: var(--texto-suave);
-  font-size: clamp(.95rem, 2.6vw, 1.08rem);
-}
-
-/* Coração em CSS: um quadrado girado -45° + dois círculos.
-   Os círculos vão ACIMA e à DIREITA: são as duas bordas que se encontram no
-   canto superior direito, e é esse canto que a rotação leva para o topo —
-   deixando o canto oposto (o bico) apontando para baixo. */
+/* Coração de estrelas: uma constelação. Nada de forma sólida — são as mesmas
+   estrelas do céu daqui de cima, só que juntadas num coração.
+   São 54 no total: 40 fechando o contorno e 14 por dentro, em dois anéis
+   menores do mesmo desenho, para o miolo não ficar oco.
+   Todas saem da curva paramétrica do coração
+   (x = 16sen³t, y = 13cos t − 5cos2t − 2cos3t − cos4t), espaçadas por
+   COMPRIMENTO DE ARCO e não por t — em t puro elas se amontoam no bico de
+   baixo e ralam nas lobadas. Os anéis de dentro são a mesma curva encolhida
+   em torno do centro visual (0, −2,5), e não da origem: encolhendo pela
+   origem eles escorregam para cima e saem pela lobada.
+   As porcentagens já são o resultado dessa conta; não dá para acertá-las no
+   olho, e mexer numa sozinha entorta o desenho inteiro.
+   O `aspect-ratio` é o da própria curva (35 por 30,5 unidades, com meia
+   unidade de folga de cada lado). Ele existe justamente porque as posições
+   são relativas à caixa: com largura e altura soltas, mudar uma sem a outra
+   achataria o coração. Mexa só na largura — a altura vem junto. */
 .coracao {
   position: relative;
-  width: 118px;
-  height: 118px;
-  /* a rotação já deixa o coração centrado na horizontal; a margem de cima
-     compensa a lobada que sobe para fora da caixa do botão */
-  margin: 3.6rem auto 1.2rem;
-  transform: rotate(-45deg);
-  background: var(--vinho);
-  border-radius: 0 0 0 14px;     /* arredonda de leve o bico */
-  box-shadow: var(--sombra-forte);
-  transition: transform var(--transicao), background var(--transicao);
+  width: clamp(190px, 52vw, 250px);
+  aspect-ratio: 154 / 134;
+  /* nada sai da caixa do botão, então a margem de cima é só respiro */
+  margin: 2.4rem auto 1.2rem;
+  transition: transform var(--transicao);
 }
-.coracao::before,
+
+/* Os halos, e o brilho por dentro do coração.
+   Cada estrela é DUAS camadas: o halo largo e fraco aqui, o núcleo aceso no
+   ::after. É a diferença entre parecer luz e parecer bolinha — e é de
+   propósito que não é `filter: drop-shadow`: com 54 estrelas e a piscada
+   rodando, o filtro é reprocessado a cada quadro e engasga no celular;
+   gradiente o navegador pinta uma vez e esquece.
+   O brilho de dentro fica por ÚLTIMO na lista: em `background` a primeira
+   camada é a de cima, então quem vem no fim é quem fica no fundo. */
+.coracao::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(10.2px 10.2px at 50% 97%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.5px 7.5px at 47% 89%, var(--brilho-lua), transparent 70%),
+    radial-gradient(8.8px 8.8px at 43% 82%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.8px 6.8px at 38% 76%, var(--brilho-lua), transparent 70%),
+    radial-gradient(11.6px 11.6px at 32% 71%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.8px 7.8px at 27% 65%, var(--brilho-lua), transparent 70%),
+    radial-gradient(9.5px 9.5px at 21% 60%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.8px 6.8px at 16% 54%, var(--brilho-lua), transparent 70%),
+    radial-gradient(10.5px 10.5px at 11% 48%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.5px 7.5px at  7% 41%, var(--brilho-lua), transparent 70%),
+    radial-gradient(10.2px 10.2px at  5% 33%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.5px 7.5px at  4% 25%, var(--brilho-lua), transparent 70%),
+    radial-gradient(8.8px 8.8px at  7% 17%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.8px 6.8px at 11% 10%, var(--brilho-lua), transparent 70%),
+    radial-gradient(11.6px 11.6px at 17%  5%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.8px 7.8px at 24%  2%, var(--brilho-lua), transparent 70%),
+    radial-gradient(9.5px 9.5px at 31%  2%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.8px 6.8px at 38%  5%, var(--brilho-lua), transparent 70%),
+    radial-gradient(10.5px 10.5px at 44% 10%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.5px 7.5px at 48% 17%, var(--brilho-lua), transparent 70%),
+    radial-gradient(10.2px 10.2px at 50% 25%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.5px 7.5px at 52% 17%, var(--brilho-lua), transparent 70%),
+    radial-gradient(8.8px 8.8px at 56% 10%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.8px 6.8px at 62%  5%, var(--brilho-lua), transparent 70%),
+    radial-gradient(11.6px 11.6px at 69%  2%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.8px 7.8px at 76%  2%, var(--brilho-lua), transparent 70%),
+    radial-gradient(9.5px 9.5px at 83%  5%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.8px 6.8px at 89% 10%, var(--brilho-lua), transparent 70%),
+    radial-gradient(10.5px 10.5px at 93% 17%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.5px 7.5px at 96% 25%, var(--brilho-lua), transparent 70%),
+    radial-gradient(10.2px 10.2px at 95% 33%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.5px 7.5px at 93% 41%, var(--brilho-lua), transparent 70%),
+    radial-gradient(8.8px 8.8px at 89% 48%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.8px 6.8px at 84% 54%, var(--brilho-lua), transparent 70%),
+    radial-gradient(11.6px 11.6px at 79% 60%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.8px 7.8px at 73% 65%, var(--brilho-lua), transparent 70%),
+    radial-gradient(9.5px 9.5px at 68% 71%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.8px 6.8px at 62% 76%, var(--brilho-lua), transparent 70%),
+    radial-gradient(10.5px 10.5px at 57% 82%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.5px 7.5px at 53% 89%, var(--brilho-lua), transparent 70%),
+    /* halos do anel de dentro */
+    radial-gradient(8.2px 8.2px at 46% 69%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.5px 6.5px at 31% 54%, var(--brilho-lua), transparent 70%),
+    radial-gradient(9.2px 9.2px at 23% 35%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.8px 6.8px at 36% 21%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.5px 7.5px at 50% 33%, var(--brilho-lua), transparent 70%),
+    radial-gradient(8.8px 8.8px at 62% 21%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.5px 6.5px at 77% 33%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.8px 7.8px at 70% 53%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.1px 7.1px at 56% 67%, var(--brilho-lua), transparent 70%),
+    /* e do anel menor, no miolo */
+    radial-gradient(8.5px 8.5px at 45% 56%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.5px 6.5px at 37% 39%, var(--brilho-lua), transparent 70%),
+    radial-gradient(7.5px 7.5px at 50% 42%, var(--brilho-lua), transparent 70%),
+    radial-gradient(9.2px 9.2px at 63% 39%, var(--brilho-lua), transparent 70%),
+    radial-gradient(6.8px 6.8px at 55% 56%, var(--brilho-lua), transparent 70%),
+    /* o brilho do corpo do coração, lá no fundo de tudo */
+    radial-gradient(56% 50% at 50% 44%, var(--brilho-lua), transparent 72%);
+  opacity: .85;
+  transition: opacity var(--transicao);
+  animation: bater 4.5s ease-in-out infinite;
+}
+
+/* Os núcleos das estrelas.
+   Camada própria (e não o fundo do botão) para o `cintilar` piscar só elas:
+   no elemento inteiro a opacidade levaria o texto junto. O -3s joga a
+   piscada em contratempo com o céu atrás. */
 .coracao::after {
   content: "";
   position: absolute;
-  width: 118px;
-  height: 118px;
-  background: inherit;
-  border-radius: 50%;
+  inset: 0;
+  background:
+    radial-gradient(3px 3px at 50% 97%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.2px 2.2px at 47% 89%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.6px 2.6px at 43% 82%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2px 2px at 38% 76%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(3.4px 3.4px at 32% 71%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.3px 2.3px at 27% 65%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.8px 2.8px at 21% 60%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2px 2px at 16% 54%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(3.1px 3.1px at 11% 48%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.2px 2.2px at  7% 41%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(3px 3px at  5% 33%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.2px 2.2px at  4% 25%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.6px 2.6px at  7% 17%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2px 2px at 11% 10%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(3.4px 3.4px at 17%  5%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.3px 2.3px at 24%  2%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.8px 2.8px at 31%  2%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2px 2px at 38%  5%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(3.1px 3.1px at 44% 10%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.2px 2.2px at 48% 17%, var(--brilho-estrela-fraco), transparent 62%),
+    /* o vinco entre as duas lobadas */
+    radial-gradient(3px 3px at 50% 25%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.2px 2.2px at 52% 17%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.6px 2.6px at 56% 10%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2px 2px at 62%  5%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(3.4px 3.4px at 69%  2%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.3px 2.3px at 76%  2%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.8px 2.8px at 83%  5%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2px 2px at 89% 10%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(3.1px 3.1px at 93% 17%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.2px 2.2px at 96% 25%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(3px 3px at 95% 33%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.2px 2.2px at 93% 41%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.6px 2.6px at 89% 48%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2px 2px at 84% 54%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(3.4px 3.4px at 79% 60%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.3px 2.3px at 73% 65%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.8px 2.8px at 68% 71%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2px 2px at 62% 76%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(3.1px 3.1px at 57% 82%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2.2px 2.2px at 53% 89%, var(--brilho-estrela-fraco), transparent 62%),
+    /* anel de dentro */
+    radial-gradient(2.4px 2.4px at 46% 69%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(1.9px 1.9px at 31% 54%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.7px 2.7px at 23% 35%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2px 2px at 36% 21%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.2px 2.2px at 50% 33%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.6px 2.6px at 62% 21%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(1.9px 1.9px at 77% 33%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.3px 2.3px at 70% 53%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.1px 2.1px at 56% 67%, var(--brilho-estrela-fraco), transparent 62%),
+    /* anel menor, no miolo */
+    radial-gradient(2.5px 2.5px at 45% 56%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(1.9px 1.9px at 37% 39%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.2px 2.2px at 50% 42%, var(--brilho-estrela-fraco), transparent 62%),
+    radial-gradient(2.7px 2.7px at 63% 39%, var(--brilho-estrela), transparent 62%),
+    radial-gradient(2px 2px at 55% 56%, var(--brilho-estrela-fraco), transparent 62%);
+  animation:
+    cintilar 5.5s ease-in-out -3s infinite,
+    bater 4.5s ease-in-out infinite;
 }
-.coracao::before { top: -59px; left: 0; }
-.coracao::after  { top: 0; left: 59px; }
+
+/* A batida. Vai nas DUAS camadas de luz e não no botão: no botão ela
+   sobrescreveria o `transform` do hover, e o coração pararia de crescer no
+   toque. Assim os dois se somam. */
+@keyframes bater {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.035); }
+}
 
 .coracao__texto {
   position: relative;
@@ -407,19 +653,23 @@ body::after {
   place-items: center;
   width: 100%;
   height: 100%;
-  /* desgira o texto e o sobe até o centro visual do coração, que fica
-     acima do centro da caixa quadrada do botão */
-  transform: translate(29.5px, -29.5px) rotate(45deg);
-  color: var(--texto-claro);
+  /* o centro visual do coração fica um tico acima do centro da caixa */
+  transform: translateY(-4%);
+  color: var(--luar);
+  text-shadow: 0 0 22px var(--brilho-lua), 0 0 8px var(--brilho-lua);
   font-family: var(--serif);
-  font-size: 1.32rem;
+  font-size: clamp(1.3rem, 4vw, 1.6rem);
   letter-spacing: .04em;
 }
 
+/* no toque a constelação acende: o coração cresce e o brilho de dentro sobe */
 .coracao:hover,
 .coracao:focus-visible {
-  transform: rotate(-45deg) scale(1.07);
-  background: var(--vinho-claro);
+  transform: scale(1.07);
+}
+.coracao:hover::before,
+.coracao:focus-visible::before {
+  opacity: 1;
 }
 
 /* o conteúdo só aparece depois do clique — mas apenas se houver JS */
@@ -451,14 +701,19 @@ body::after {
   box-shadow: 0 0 60px 16px var(--brilho-lua);
 }
 
-.nuvem--topo-1 { top: 14%; left: 4%;  width: clamp(120px, 34vw, 210px); animation-duration: 52s; }
-.nuvem--topo-2 { top: 30%; right: 2%; width: clamp(100px, 28vw, 180px); animation-duration: 64s; animation-delay: -18s; }
-/* esta cruza por cima da lua, e por isso é a densa */
+/* Os `top` daqui são o topo da CAIXA, não o da nuvem: como o desenho fica
+   centrado numa caixa quadrada, ele começa uns 23% mais abaixo. Por isso os
+   três sobem — assim a nuvem continua no alto da faixa, longe das ondas. */
+.nuvem--topo-1 { top: 6%;  left: 4%;  width: clamp(120px, 34vw, 210px); animation-duration: 52s; }
+.nuvem--topo-2 { top: 12%; right: 2%; width: clamp(100px, 28vw, 180px); animation-duration: 64s; animation-delay: -18s; }
+/* esta cruza por cima da lua, e por isso é a densa. O recuo é menor que o de
+   antes (-12%): a nuvem desenhada é bem mais alta que a cápsula que havia
+   aqui, e com o recuo antigo ela passava ao LADO da lua em vez de por cima. */
 .nuvem--topo-3 {
-  top: 26%;
+  top: 8%;
   left: 50%;
   width: clamp(90px, 24vw, 150px);
-  margin-left: -12%;
+  margin-left: -6%;
   animation-duration: 38s;
   animation-delay: -9s;
 }
@@ -522,9 +777,6 @@ body::after {
   from { transform: translateX(0); }
   to   { transform: translateX(calc(var(--passo) * -1)); }
 }
-
-/* As duas estrelas pousadas na crista ficam com as outras, lá no bloco 6 —
-   é lá que mora a pose de toda estrela solta da página. */
 
 /* ------- 4C. A ABERTURA: O RECADO E A MÁSCARA QUE ABRE AO ROLAR -----------
    A primeira seção depois do clique: o recado grande, a setinha de rolar e,
@@ -784,11 +1036,8 @@ body::after {
    sem z-index próprio, ela não cria contexto de empilhamento e as estrelas
    caem atrás de todo o texto da página, sem nunca cobrir nada. */
 .secao::before,
-.secao::after { content: ""; }
-
-.secao::before,
-.secao::after,
-.enfeite {
+.secao::after {
+  content: "";
   position: absolute;
   z-index: -1;
   pointer-events: none;
@@ -877,61 +1126,452 @@ body::after {
   opacity: .48;
 }
 
-/* --- as estrelas soltas em <span>, e não em pseudo-elemento: são as da tela
-       de entrada e as do topo, onde os dois pseudos já têm dono --- */
-.enfeite { display: block; }
+/* A capa — a tela de entrada e a faixa do topo — não tem estrela-do-mar
+   nenhuma: lá em cima é só céu, lua e nuvem. Elas começam daqui para baixo,
+   nas seções, onde o mar já tomou conta da página. */
 
-.enfeite--estrela-baixo-esq {
-  width: clamp(60px, 15vw, 116px);
-  left: 8%;
-  bottom: 9%;
-  transform: rotate(-16deg);
+/* --------------- 6B. OS BICHOS, AS ALGAS E MAIS ESTRELAS -----------------
+   O bloco 6 dá duas estrelas-do-mar por seção, e não sobra pseudo-elemento
+   para mais nada. Tudo o que vem daqui para baixo é ELEMENTO de verdade —
+   <span> vazio e aria-hidden lá no index.html, um por bicho.
+
+   Três famílias, e a mesma disciplina do resto da folha: o desenho aparece
+   uma vez só, lá no :root; aqui embaixo mora apenas a POSE de cada um
+   (canto, tamanho, giro, transparência e compasso).
+
+     .bicho        — os peixes: boiam no lugar, cada um no seu ritmo
+     .alga         — plantadas no pé da seção, balançando pela raiz
+     .estrela-mar  — as soltas, que se somam às dos pseudo-elementos
+
+   Todas com z-index: -1, atrás de qualquer texto — como a .secao é
+   `relative` sem z-index próprio, elas caem no fundo e nunca cobrem nada.
+   Nenhuma tem `filter`: com uns trinta enfeites animados na página, filtro
+   é reprocessado quadro a quadro e engasga no celular.
+   -------------------------------------------------------------------------- */
+.bicho,
+.alga,
+.estrela-mar {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* --- os peixes ----------------------------------------------------------
+   O `--vira` é o lado para onde o bicho olha: 1 como veio o desenho, -1
+   espelhado. Ele entra DENTRO do keyframe, e não numa regra à parte, porque
+   `transform` é uma propriedade só: um `scaleX` escrito fora seria apagado
+   pela animação, e o peixe voltaria a olhar para o lado errado.
+   A boiada é de propósito curta (3% para o lado, uns pixels para cima): eles
+   estão parados no seu canto, não atravessando a tela. */
+.bicho {
+  animation: boiar 26s ease-in-out infinite alternate;
+  opacity: .9;
+}
+
+@keyframes boiar {
+  from { transform: translate(-3%,  2px) scaleX(var(--vira, 1)); }
+  50%  { transform: translate(0,   -6px) scaleX(var(--vira, 1)); }
+  to   { transform: translate(3%,   3px) scaleX(var(--vira, 1)); }
+}
+
+/* qual desenho e a proporção do arquivo — a altura vem sozinha da largura */
+.bicho--nemo       { background-image: var(--nemo-img);       aspect-ratio: 1; }
+.bicho--dory       { background-image: var(--dory-img);       aspect-ratio: 800 / 594; }
+.bicho--peixonauta { background-image: var(--peixonauta-img); aspect-ratio: 620 / 372; }
+.bicho--bob        { background-image: var(--bob-img);        aspect-ratio: 1; }
+.bicho--peixe      { background-image: var(--peixe-img);      aspect-ratio: 525 / 350; }
+
+/* --- as algas -----------------------------------------------------------
+   `bottom: 0` é o pé da seção, e o `transform-origin` embaixo faz o balanço
+   sair da raiz, como planta de verdade — não do meio do talo. O arquivo é
+   quadrado com a alga desenhada no meio, então a largura que se escreve aqui
+   é maior que a alga na tela; é por isso que os números parecem grandes. */
+.alga {
+  bottom: 0;
+  aspect-ratio: 1;
+  background-position: center bottom;
+  transform-origin: 50% 100%;
   opacity: .5;
+  animation: ondular 9s ease-in-out infinite alternate;
 }
 
-.enfeite--estrela-baixo-dir {
-  width: clamp(54px, 13vw, 100px);
+.alga--azul     { background-image: var(--alga-azul-img); }
+.alga--vermelha { background-image: var(--alga-vermelha-img); }
+
+@keyframes ondular {
+  from { transform: rotate(-2.4deg) skewX(1.6deg); }
+  to   { transform: rotate(2.4deg)  skewX(-1.6deg); }
+}
+
+/* --- as estrelas soltas -------------------------------------------------
+   Paradas: estrela-do-mar não nada. Cada uma cai num giro diferente. */
+.estrela-mar {
+  aspect-ratio: 1;
+  background-image: var(--estrela-mar);
+  opacity: .4;
+}
+
+/* --- a borda do desktop -------------------------------------------------
+   A coluna tem 1080px; numa tela grande sobra tela dos dois lados, e é essa
+   margem que estes enfeites ocupam. O `calc(50% - 50vw)` é a borda da JANELA
+   vista de dentro da seção centrada — o mesmo truque do full-bleed do bloco
+   4C. Abaixo de 1240px não há margem que os comporte, e aí eles somem: é
+   decoração de tela grande, e no celular só atrapalharia.
+
+   O `--recuo` não é só respiro: as estrelas entram giradas, e uma caixa
+   girada ocupa mais que a própria largura. Com recuo curto demais, a ponta de
+   uma delas passa da janela e a página ganha um pixel de rolagem horizontal.
+   1,35rem é o que segura a maior delas em 1920px. */
+.borda { display: none; }
+
+@media (min-width: 1240px) {
+  .borda { display: block; }
+  .borda--esq { left:  calc(50% - 50vw + var(--recuo, 1.35rem)); }
+  .borda--dir { right: calc(50% - 50vw + var(--recuo, 1.35rem)); }
+}
+
+/* ---------- as poses, seção por seção, na ordem da página ---------------- */
+
+/* --- abertura: um peixe-palhaço passando no alto do recado --- */
+.bicho--peixe-abraco {
+  top: 4%;
+  right: 7%;
+  width: clamp(46px, 11vw, 84px);
+  --vira: -1;
+  opacity: .8;
+  animation-duration: 21s;
+}
+
+/* --- contador: o Nemo à direita, olhando para o contador --- */
+.bicho--nemo {
+  top: 8%;
+  right: 7%;
+  width: clamp(54px, 13vw, 98px);
+  --vira: -1;
+  animation-duration: 24s;
+}
+.alga--contador-1 {
+  left: 5%;
+  width: clamp(70px, 17vw, 130px);
+  animation-duration: 11s;
+}
+.alga--contador-2 {
   right: 9%;
-  bottom: 13%;
-  transform: rotate(28deg);
-  opacity: .55;
+  width: clamp(52px, 12vw, 96px);
+  opacity: .38;
+  animation-duration: 8s;
+  animation-delay: -3s;
 }
-
-.enfeite--estrela-cima-dir {
-  width: clamp(40px, 10vw, 74px);
-  right: 12%;
-  top: 9%;
-  transform: rotate(57deg);
+.estrela-mar--contador-1 {
+  top: 44%;
+  right: 5%;
+  width: clamp(30px, 7vw, 52px);
+  transform: rotate(23deg);
   opacity: .34;
 }
+.estrela-mar--contador-2 {
+  bottom: 26%;
+  left: 9%;
+  width: clamp(26px, 6vw, 44px);
+  transform: rotate(-47deg);
+  opacity: .3;
+}
+.estrela-mar--borda-contador {
+  top: 14%;
+  width: clamp(44px, 5vw, 88px);
+  transform: rotate(-14deg);
+  opacity: .42;
+}
+.alga--borda-contador {
+  width: clamp(56px, 6.5vw, 110px);
+  opacity: .42;
+  animation-duration: 12s;
+  animation-delay: -5s;
+}
+.bicho--peixe-borda-contador {
+  top: 36%;
+  width: clamp(42px, 5vw, 82px);
+  --vira: -1;
+  opacity: .72;
+  animation-duration: 19s;
+}
 
-.enfeite--estrela-meio-esq {
-  width: clamp(32px, 8vw, 58px);
-  left: 15%;
-  top: 34%;
-  transform: rotate(-44deg);
+/* --- timeline: a Dory entrando pela esquerda --- */
+.bicho--dory {
+  top: 9%;
+  left: 2%;
+  width: clamp(66px, 16vw, 126px);
+  animation-duration: 31s;
+  animation-delay: -7s;
+}
+.alga--timeline {
+  right: 6%;
+  width: clamp(64px, 15vw, 118px);
+  opacity: .42;
+  animation-duration: 10s;
+  animation-delay: -2s;
+}
+.estrela-mar--timeline-1 {
+  top: 30%;
+  right: 6%;
+  width: clamp(26px, 6vw, 46px);
+  transform: rotate(51deg);
+  opacity: .3;
+}
+.estrela-mar--timeline-2 {
+  bottom: 34%;
+  left: 6%;
+  width: clamp(30px, 7vw, 50px);
+  transform: rotate(-8deg);
+  opacity: .33;
+}
+.estrela-mar--borda-timeline-1 {
+  top: 9%;
+  width: clamp(46px, 5.5vw, 92px);
+  transform: rotate(27deg);
+  opacity: .4;
+}
+.estrela-mar--borda-timeline-2 {
+  top: 46%;
+  width: clamp(38px, 4.5vw, 74px);
+  transform: rotate(-36deg);
+  opacity: .36;
+}
+.alga--borda-timeline {
+  width: clamp(60px, 7vw, 120px);
+  opacity: .4;
+  animation-duration: 13s;
+}
+/* a timeline é a seção mais alta da página: sem estes dois no meio da
+   margem, o desktop ficaria com um corredor vazio de uma tela inteira */
+.estrela-mar--borda-timeline-3 {
+  top: 72%;
+  width: clamp(40px, 4.8vw, 78px);
+  transform: rotate(-49deg);
+  opacity: .34;
+}
+.bicho--peixe-borda-timeline {
+  top: 63%;
+  width: clamp(42px, 5vw, 80px);
+  opacity: .72;
+  animation-duration: 27s;
+  animation-delay: -13s;
+}
+
+/* --- calendário: o Peixonauta descendo pela direita --- */
+.bicho--peixonauta {
+  top: 19%;
+  right: 3%;
+  width: clamp(76px, 18vw, 138px);
+  animation-duration: 28s;
+  animation-delay: -11s;
+}
+.bicho--peixe-calendario {
+  bottom: 24%;
+  left: 5%;
+  width: clamp(44px, 10vw, 78px);
+  opacity: .82;
+  animation-duration: 23s;
+  animation-delay: -6s;
+}
+.alga--calendario {
+  left: 7%;
+  width: clamp(66px, 16vw, 122px);
+  animation-duration: 12s;
+  animation-delay: -4s;
+}
+.estrela-mar--calendario-1 {
+  top: 12%;
+  left: 6%;
+  width: clamp(28px, 6vw, 48px);
+  transform: rotate(-25deg);
+  opacity: .32;
+}
+.estrela-mar--calendario-2 {
+  bottom: 30%;
+  right: 7%;
+  width: clamp(26px, 6vw, 44px);
+  transform: rotate(66deg);
+  opacity: .3;
+}
+.estrela-mar--borda-calendario {
+  top: 20%;
+  width: clamp(44px, 5vw, 86px);
+  transform: rotate(41deg);
+  opacity: .4;
+}
+.alga--borda-calendario {
+  width: clamp(58px, 6.5vw, 112px);
+  opacity: .44;
+  animation-duration: 9s;
+  animation-delay: -6s;
+}
+.bicho--peixe-borda-calendario {
+  top: 58%;
+  width: clamp(40px, 4.8vw, 78px);
+  --vira: -1;
+  opacity: .7;
+  animation-duration: 25s;
+  animation-delay: -9s;
+}
+
+/* --- galeria: pouca coisa por dentro, que a grade já é cheia --- */
+.bicho--peixe-galeria {
+  top: 5%;
+  right: 12%;
+  width: clamp(40px, 9vw, 72px);
+  --vira: -1;
+  opacity: .78;
+  animation-duration: 20s;
+  animation-delay: -3s;
+}
+.alga--galeria {
+  left: 4%;
+  width: clamp(58px, 14vw, 108px);
+  opacity: .4;
+  animation-duration: 10s;
+  animation-delay: -7s;
+}
+.estrela-mar--galeria-1 {
+  top: 40%;
+  left: 2%;
+  width: clamp(24px, 5vw, 40px);
+  transform: rotate(15deg);
   opacity: .28;
 }
-
-/* as duas do topo pousam na crista da onda: precisam vir para a FRENTE dela,
-   e por isso são as únicas que fogem do z-index negativo lá de cima */
-.enfeite--estrela-mar-esq,
-.enfeite--estrela-mar-dir { z-index: 1; }
-
-.enfeite--estrela-mar-esq {
-  width: clamp(38px, 9vw, 62px);
-  left: 13%;
-  bottom: 3%;
-  transform: rotate(-27deg);
-  opacity: .6;
+.estrela-mar--galeria-2 {
+  bottom: 18%;
+  right: 2%;
+  width: clamp(26px, 6vw, 44px);
+  transform: rotate(-58deg);
+  opacity: .28;
+}
+.estrela-mar--borda-galeria-1 {
+  top: 13%;
+  width: clamp(46px, 5.5vw, 90px);
+  transform: rotate(-31deg);
+  opacity: .4;
+}
+.estrela-mar--borda-galeria-2 {
+  bottom: 28%;
+  width: clamp(38px, 4.5vw, 72px);
+  transform: rotate(19deg);
+  opacity: .36;
+}
+.alga--borda-galeria {
+  width: clamp(62px, 7vw, 118px);
+  opacity: .42;
+  animation-duration: 14s;
+  animation-delay: -3s;
+}
+/* a galeria é ainda mais alta que a timeline — são 94 fotos. Mesma história:
+   mais três descendo pela margem, para a borda não secar no meio */
+.bicho--peixe-borda-galeria {
+  top: 24%;
+  width: clamp(40px, 4.8vw, 76px);
+  --vira: -1;
+  opacity: .7;
+  animation-duration: 24s;
+  animation-delay: -5s;
+}
+.estrela-mar--borda-galeria-3 {
+  top: 45%;
+  width: clamp(40px, 4.8vw, 78px);
+  transform: rotate(62deg);
+  opacity: .34;
+}
+.estrela-mar--borda-galeria-4 {
+  top: 70%;
+  width: clamp(34px, 4.2vw, 66px);
+  transform: rotate(-24deg);
+  opacity: .32;
 }
 
-.enfeite--estrela-mar-dir {
-  width: clamp(30px, 7vw, 50px);
-  right: 16%;
-  bottom: 9%;
-  transform: rotate(41deg);
-  opacity: .45;
+/* --- playlist: um peixe no alto (o Bob mora só no rodapé, de pé na areia,
+       bloco 14 — boiando no meio da água ele não colava) --- */
+.bicho--peixe-musica {
+  top: 12%;
+  right: 8%;
+  width: clamp(44px, 10vw, 80px);
+  --vira: -1;
+  opacity: .82;
+  animation-duration: 22s;
+  animation-delay: -8s;
+}
+.alga--musica {
+  right: 5%;
+  width: clamp(62px, 15vw, 114px);
+  animation-duration: 11s;
+  animation-delay: -6s;
+}
+.estrela-mar--musica-1 {
+  top: 22%;
+  left: 5%;
+  width: clamp(28px, 6vw, 48px);
+  transform: rotate(-63deg);
+  opacity: .32;
+}
+.estrela-mar--musica-2 {
+  bottom: 12%;
+  right: 12%;
+  width: clamp(24px, 5vw, 42px);
+  transform: rotate(37deg);
+  opacity: .3;
+}
+.estrela-mar--borda-musica-1 {
+  top: 24%;
+  width: clamp(44px, 5vw, 84px);
+  transform: rotate(58deg);
+  opacity: .4;
+}
+.estrela-mar--borda-musica-2 {
+  bottom: 22%;
+  width: clamp(38px, 4.5vw, 74px);
+  transform: rotate(-12deg);
+  opacity: .36;
+}
+.alga--borda-musica {
+  width: clamp(56px, 6.5vw, 108px);
+  opacity: .44;
+  animation-duration: 10s;
+  animation-delay: -8s;
+}
+
+/* ---------- os peixes-palhaço atravessando, como o Gary lá embaixo -------
+   Eles não ficam mais boiando num canto: cada um cruza a tela inteira, no
+   sentido para onde o desenho já olha — o `--vira` da pose manda nas duas
+   coisas ao mesmo tempo. `calc(50vw ± --vira * 80vw)` é isso: com `--vira: 1`
+   (olhando para a direita) ele entra em -30vw e sai em 130vw; com `-1`, o
+   caminho vem invertido junto com o espelhamento. Ninguém nada de ré.
+
+   Este bloco fica DEPOIS de todas as poses de propósito: é ele quem apaga o
+   `left`/`right` que cada uma escrevia — para quem atravessa, o canto de
+   origem não quer dizer nada, só a altura. O mesmo vale sobre `.borda--esq`
+   e `.borda--dir`; os peixes de margem passam a atravessar também, e a
+   `.borda` segue escondendo-os no celular.
+
+   O `animation-direction: normal` é obrigatório: o atalho do `.bicho` traz
+   `alternate`, e um peixe alternando voltaria nadando de costas. */
+.bicho--peixe {
+  left: 0;
+  right: auto;
+  animation-name: nadar-atravessa;
+  animation-timing-function: linear;
+  animation-direction: normal;
+}
+
+/* Os quatro trechos são iguais em tempo E em distância (40vw cada), então o
+   `linear` não dá solavanco nenhum: o sobe-e-desce dos 9px é a única coisa
+   que se nota, e sai como duas ondinhas ao longo da travessia. */
+@keyframes nadar-atravessa {
+  0%   { transform: translateX(calc(50vw - var(--vira, 1) * 80vw))               scaleX(var(--vira, 1)); }
+  25%  { transform: translateX(calc(50vw - var(--vira, 1) * 40vw)) translateY(-9px) scaleX(var(--vira, 1)); }
+  50%  { transform: translateX(50vw)                                             scaleX(var(--vira, 1)); }
+  75%  { transform: translateX(calc(50vw + var(--vira, 1) * 40vw)) translateY(-9px) scaleX(var(--vira, 1)); }
+  100% { transform: translateX(calc(50vw + var(--vira, 1) * 80vw))               scaleX(var(--vira, 1)); }
 }
 
 /* ------------------------------ 7. CONTADOR ------------------------------ */
@@ -1111,6 +1751,9 @@ body::after {
 .marco__titulo { font-size: 1.3rem; color: var(--luar); margin-bottom: .4rem; }
 .marco__descricao { color: var(--texto-suave); font-size: .95rem; }
 
+/* o trecho que veio entre *asteriscos* no data/momentos.js */
+.marco__enfase { color: var(--estrela); font-weight: 700; }
+
 .marco__foto {
   margin-top: .9rem;
   width: 100%;
@@ -1123,6 +1766,24 @@ body::after {
   margin-left: auto;
 }
 .marco:nth-child(even) .marco__foto { margin-left: 0; margin-right: auto; }
+
+/* A foto do marco abre o DIA inteiro no lightbox (js/timeline.js). Ela não é
+   embrulhada num <button> de propósito: o alinhamento em zigue-zague acima
+   depende do margin-left da própria .marco__foto. Daí só o cursor mudar aqui —
+   o anel de foco do teclado vem do :focus-visible global lá no topo.
+   O `.marco__lupa *` alcança a <canvas> do cartão cromático e a imagem de
+   reserva de quando não há WebGL. */
+.marco__lupa,
+.marco__lupa * { cursor: zoom-in; }
+
+/* O vídeo herda a moldura da foto, menos o recorte: cortar um vídeo de pé
+   em 4/3 esconderia metade da cena, e o quadro preto atrás evita a faixa
+   transparente enquanto o primeiro quadro não carregou. */
+.marco__video {
+  aspect-ratio: auto;
+  object-fit: contain;
+  background: #000;
+}
 
 /* --------------------- 8b. O MARCO CROMÁTICO (a virada) -------------------
    O marco com `destaque: true` troca a miniatura por uma <canvas> WebGL
@@ -1178,8 +1839,11 @@ body::after {
    O marco com `corte: true` sai de um dos lados e ocupa a largura inteira:
    a data, o título e a foto atravessam o caule e o partem em dois. Ele não
    desenha o próprio pedaço de caule (é o corte) nem a estrela-do-mar do
-   lado (não há lado nenhum para ela pousar). */
-.marco--corte {
+   lado (não há lado nenhum para ela pousar).
+   O seletor repete a classe (`.marco.marco--corte`) de propósito: com uma
+   classe só, um marco em posição PAR perdia para o `.marco:nth-child(even)`
+   lá em cima e continuava na metade direita, alinhado à esquerda. */
+.marco.marco--corte {
   width: 100%;
   margin-left: 0;
   padding: 1.2rem 1.4rem 3.4rem;
@@ -1218,6 +1882,17 @@ body::after {
   max-width: 520px;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* O mesmo vale para a mídia do marco: foto ou vídeo, ela vem ao meio e um
+   pouco maior. Aqui o recorte 4/3 dos marcos comuns também sai de cena — é o
+   maior marco da página, uma foto de pé recortada perderia meio rosto. */
+.marco--corte .marco__foto,
+.marco:nth-child(even).marco--corte .marco__foto {
+  max-width: 380px;
+  margin-left: auto;
+  margin-right: auto;
+  aspect-ratio: auto;
 }
 
 /* ------------------- 8d. O TÍTULO FEITO DE PARTÍCULAS ---------------------
@@ -1624,15 +2299,189 @@ body::after {
 .player iframe { display: block; border-radius: 12px; }
 
 /* ------------------------------- 14. RODAPÉ ------------------------------- */
-/* O fim da página é o fundo do mar: uma última onda deitada rente à borda e
-   três estrelas-do-mar caídas em tamanhos e giros diferentes. Duas delas
-   moram nos pseudo-elementos do coraçãozinho, que estava sobrando. */
+/* O fim da página é o CHÃO do mar: a última onda calma, a faixa de areia
+   embaixo dela e o Gary atravessando a areia sem pressa, com as estrelas-do-mar
+   caídas em volta. Duas delas moram nos pseudo-elementos do coraçãozinho, que
+   estava sobrando.
+
+   `--altura-areia` é a medida que amarra tudo aqui: a faixa tem essa altura, a
+   onda pousa em cima dela, o Gary caminha na parte de cima e o recuo de baixo
+   do rodapé a desconta, para o texto nunca cair dentro da areia. Mexer nela
+   move as quatro coisas juntas. */
 .rodape {
   position: relative;
-  padding: 3rem 1.25rem 4.5rem;
+  --altura-areia: clamp(56px, 13vw, 88px);
+  padding: 3rem 1.25rem calc(var(--altura-areia) + 2.6rem);
   text-align: center;
   color: var(--texto-suave);
   font-size: .85rem;
+}
+
+/* --- a areia -------------------------------------------------------------
+   Mesma receita das ondas: o degradê dá a cor, a máscara dá o formato. A duna
+   entra esticada de ponta a ponta (`100% 100%`, sem repeat) para o relevo não
+   virar carimbo. Translúcida, senão a faixa vira um bloco opaco no fim da
+   página e quebra o mergulho. */
+.areia {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  height: var(--altura-areia);
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--areia) 0%, var(--areia-escura) 100%);
+  -webkit-mask-image: var(--duna);
+          mask-image: var(--duna);
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  opacity: .55;
+}
+
+/* os grãozinhos: as mesmas bolinhas do céu estrelado, agora no chão */
+.areia::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.4px 1.4px at  7% 62%, var(--areia-clara), transparent 60%),
+    radial-gradient(1.2px 1.2px at 19% 78%, var(--areia-clara), transparent 60%),
+    radial-gradient(1.5px 1.5px at 28% 55%, var(--areia-clara), transparent 60%),
+    radial-gradient(1.2px 1.2px at 37% 84%, var(--areia-clara), transparent 60%),
+    radial-gradient(1.4px 1.4px at 46% 66%, var(--areia-clara), transparent 60%),
+    radial-gradient(1.2px 1.2px at 58% 88%, var(--areia-clara), transparent 60%),
+    radial-gradient(1.5px 1.5px at 67% 59%, var(--areia-clara), transparent 60%),
+    radial-gradient(1.2px 1.2px at 78% 81%, var(--areia-clara), transparent 60%),
+    radial-gradient(1.4px 1.4px at 88% 64%, var(--areia-clara), transparent 60%),
+    radial-gradient(1.2px 1.2px at 96% 86%, var(--areia-clara), transparent 60%);
+  opacity: .5;
+}
+
+/* --- o Gary passeando ----------------------------------------------------
+   A travessia é do próprio elemento; o balanço do passo vai no ::before, para
+   um não apagar o `transform` do outro. Ele sai de fora da borda direita e
+   some pela esquerda — o desenho olha para a esquerda, então é para lá que ele
+   anda; no sentido contrário ele andava de costas. Como a volta acontece fora
+   da tela, o laço não tem emenda e não precisa espelhar ninguém no meio do
+   caminho.
+   O `overflow-x: clip` do body (bloco 2) apara a sobra: nada de barra
+   horizontal enquanto ele passa. */
+.gary {
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  bottom: calc(var(--altura-areia) * .42);
+  width: clamp(46px, 12vw, 78px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  animation: gary-atravessa 64s linear infinite;
+}
+
+.gary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--gary-img) center / contain no-repeat;
+  opacity: .9;
+  animation: gary-passo 2.6s ease-in-out infinite;
+}
+
+/* a sombrinha que o prende na areia — sem ela ele parece flutuar */
+.gary::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: -4%;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--areia-escura), transparent);
+  opacity: .5;
+}
+
+@keyframes gary-atravessa {
+  from { transform: translateX(112vw); }
+  to   { transform: translateX(-16vw); }
+}
+
+@keyframes gary-passo {
+  0%, 100% { transform: translateY(0)    rotate(-1.6deg); }
+  50%      { transform: translateY(-3px) rotate(1.6deg); }
+}
+
+/* --- o Bob de pé na areia -------------------------------------------------
+   O desenho é de frente, então ele não atravessa nada: fica plantado na areia
+   batendo os pés no lugar. `transform-origin` embaixo faz o balanço sair dos
+   sapatos, e não do meio do corpo. O `animation` vem como atalho de propósito
+   — assim apaga o `alternate` que o `.bicho` traz. Ele mora no cantinho entre
+   a alga e a estrela da direita; a mesma sombrinha do Gary o prende no chão. */
+.bicho--bob-rodape {
+  right: 18%;
+  bottom: calc(var(--altura-areia) * .38);
+  width: clamp(52px, 13vw, 88px);
+  background-position: center bottom;
+  transform-origin: 50% 100%;
+  opacity: .92;
+  animation: bob-pisa 2.8s ease-in-out infinite;
+}
+
+.bicho--bob-rodape::after {
+  content: "";
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: -5%;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--areia-escura), transparent);
+  opacity: .5;
+}
+
+@keyframes bob-pisa {
+  0%, 100% { transform: translateY(0)    rotate(-1.8deg); }
+  50%      { transform: translateY(-4px) rotate(1.8deg); }
+}
+
+/* --- as algas e as estrelas do fundo, plantadas na areia --- */
+.alga--rodape-1,
+.alga--rodape-2 { bottom: calc(var(--altura-areia) * .55); }
+
+.alga--rodape-1 {
+  left: 6%;
+  width: clamp(50px, 13vw, 96px);
+  opacity: .42;
+  animation-duration: 12s;
+}
+.alga--rodape-2 {
+  right: 8%;
+  width: clamp(44px, 11vw, 82px);
+  opacity: .38;
+  animation-duration: 9s;
+  animation-delay: -5s;
+}
+
+.estrela-mar--rodape-1 {
+  bottom: calc(var(--altura-areia) * .3);
+  left: 24%;
+  width: clamp(24px, 6vw, 42px);
+  transform: rotate(28deg);
+  opacity: .34;
+}
+.estrela-mar--rodape-2 {
+  bottom: calc(var(--altura-areia) * .12);
+  right: 30%;
+  width: clamp(28px, 7vw, 50px);
+  transform: rotate(-53deg);
+  opacity: .32;
+}
+.estrela-mar--rodape-3 {
+  bottom: calc(var(--altura-areia) * .46);
+  right: 12%;
+  width: clamp(20px, 5vw, 36px);
+  transform: rotate(74deg);
+  opacity: .28;
 }
 .rodape__coracao {
   display: block;
@@ -1659,10 +2508,13 @@ body::after {
   background: var(--estrela-mar) center / contain no-repeat;
 }
 
-/* a onda que fecha a página, parada: aqui embaixo o mar já está calmo */
+/* A onda que fecha a página, parada: aqui embaixo o mar já está calmo. Ela
+   não mora mais rente à borda — pousa em cima da areia, com uns pixels de
+   sobreposição, para a espuma morrer dentro do chão em vez de flutuar acima
+   dele. */
 .rodape::before {
   right: 0;
-  bottom: 0;
+  bottom: calc(var(--altura-areia) - clamp(8px, 2vw, 14px));
   left: 0;
   height: clamp(40px, 10vw, 66px);
   background: linear-gradient(180deg, var(--espuma), transparent 85%);
@@ -1714,8 +2566,10 @@ body::after {
       0 0 38px 9px var(--brilho-lua);
   }
 
-  /* no celular as nuvens são mais baixas, senão viram mancha */
-  .nuvem { height: 26px; }
+  /* no celular a nuvem pesa mais na tela estreita: um pouco mais apagada,
+     senão vira mancha. A altura vem do `aspect-ratio` e não se mexe. */
+  .nuvem { opacity: calc(var(--nuvem-opacidade) * .8); }
+  .nuvem--densa { opacity: calc(var(--nuvem-opacidade-densa) * .8); }
 
   /* a tela é estreita: com o passo de 25% as ondas ficariam miúdas e agitadas.
      Dobrado, cabe uma por tela — o mar continua calmo. Só o passo muda; a
@@ -1774,6 +2628,20 @@ body::after {
   .secao::after,
   .rodape::before { filter: opacity(.62); }
 
+  /* Os bichos, as algas e as estrelas soltas (bloco 6B) também recuam: na tela
+     estreita o texto passa por cima deles o tempo todo. `filter: opacity()` de
+     novo, e não `opacity` — cada pose já traz a sua, e o filtro multiplica em
+     vez de disputar. */
+  .bicho,
+  .alga,
+  .estrela-mar,
+  .areia,
+  .gary { filter: opacity(.72); }
+
+  /* o peixe da galeria fica atrás da grade, que no celular vai de borda a
+     borda: some, em vez de espiar por trás das fotos */
+  .bicho--peixe-galeria { display: none; }
+
   .lightbox__seta { width: 44px; height: 44px; font-size: 1.6rem; }
   .lightbox__seta--ant  { left: .4rem; }
   .lightbox__seta--prox { right: .4rem; }
@@ -1797,6 +2665,19 @@ body::after {
 
   /* nada de aparecer deslizando: o conteúdo já nasce no lugar */
   .com-js [data-revelar] { opacity: 1; transform: none; }
+
+  /* O Gary precisa de regra própria. A travessia dele termina FORA da tela, e
+     a animação encurtada acima salta direto para o último quadro — ele sumiria
+     para quem pede menos movimento. Sem animação nenhuma, ele fica parado na
+     areia, num ponto escolhido a dedo. */
+  .gary { animation: none; transform: translateX(18vw); }
+  .gary::before { animation: none; }
+
+  /* mesma história dos peixes que atravessam (bloco 6B): o último quadro
+     deles é fora da tela. Parados no meio do caminho, ainda espelhados para
+     o lado certo. */
+  .bicho--peixe { animation: none; transform: translateX(50vw) scaleX(var(--vira, 1)); }
+
   .galeria__item:hover img { transform: none; }
 
   /* o cartão cromático desenha um quadro só, parado e sem efeito nenhum —

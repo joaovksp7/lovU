@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datador — Nosso Namoro</title>
+
+<!--
+  ============================================================================
+  datador.html — FERRAMENTA, não faz parte do site.
+
+  Nada no index.html aponta para cá. Isto existe só para você olhar as fotos
+  e dizer de que dia cada uma é, sem precisar abrir o momentos.js e caçar id
+  por id.
+
+  Como usar:
+    1. abra este arquivo no navegador (duplo clique já serve)
+    2. digite a data no campo embaixo de cada foto
+       — ou marque várias e use "aplicar aos marcados" lá em cima
+    3. clique em "Gerar" no rodapé e copie o bloco
+    4. cole por cima do `const fotosPorDia = { ... };` do data/momentos.js
+
+  O progresso fica salvo no navegador (localStorage) a cada tecla, então dá
+  para fechar no meio e voltar depois. Mas o navegador é só o rascunho — o
+  que vale é o que você colar no momentos.js.
+
+  A lista de mídias vem do próprio data/momentos.js: foto nova na lista
+  `fotos` aparece aqui sozinha, sem mexer neste arquivo.
+  ============================================================================
+-->
+
+<style>
+  :root {
+    --fundo: #14181d;
+    --caixa: #1d232b;
+    --caixa-alta: #262e38;
+    --linha: #333d49;
+    --texto: #e8eaed;
+    --fraco: #94a0ae;
+    --marca: #e0849a;
+    --ok: #7fb98a;
+    --alerta: #d9a441;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 0 0 8rem;
+    background: var(--fundo);
+    color: var(--texto);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  a { color: var(--marca); }
+
+  /* ---------- barra do topo ---------- */
+  .topo {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--caixa);
+    border-bottom: 1px solid var(--linha);
+    padding: .75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1rem;
+    align-items: center;
+  }
+
+  .topo h1 {
+    font-size: 1rem;
+    margin: 0 .5rem 0 0;
+    font-weight: 600;
+    letter-spacing: .02em;
+  }
+
+  .progresso { color: var(--fraco); font-variant-numeric: tabular-nums; }
+  .progresso b { color: var(--ok); }
+
+  .grupo {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    padding-left: 1rem;
+    border-left: 1px solid var(--linha);
+  }
+
+  button, select, input {
+    font: inherit;
+    color: var(--texto);
+    background: var(--caixa-alta);
+    border: 1px solid var(--linha);
+    border-radius: 6px;
+    padding: .35rem .6rem;
+  }
+
+  button { cursor: pointer; }
+  button:hover { border-color: var(--marca); }
+  button:disabled { opacity: .4; cursor: default; border-color: var(--linha); }
+
+  button.primario {
+    background: var(--marca);
+    border-color: var(--marca);
+    color: #16181c;
+    font-weight: 600;
+  }
+
+  /* ---------- a grade ---------- */
+  .grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: .9rem;
+    padding: 1rem;
+  }
+
+  .card {
+    background: var(--caixa);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card.marcado { border-color: var(--marca); }
+  .card.datado  { background: var(--caixa-alta); }
+
+  .card__midia {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #0e1114;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+  }
+
+  .card__midia img,
+  .card__midia video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card__id {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, .72);
+    color: #fff;
+    font-size: .72rem;
+    padding: .15rem .4rem;
+    border-top-right-radius: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card__lupa {
+    position: absolute;
+    right: .3rem;
+    top: .3rem;
+    background: rgba(0, 0, 0, .6);
+    border: 0;
+    border-radius: 6px;
+    color: #fff;
+    padding: .2rem .4rem;
+    font-size: .8rem;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .card__pe {
+    padding: .45rem;
+    display: flex;
+    gap: .3rem;
+    align-items: center;
+  }
+
+  .card__pe input[type="date"] { flex: 1; min-width: 0; padding: .3rem .35rem; }
+  .card__pe .limpar { padding: .3rem .45rem; line-height: 1; }
+
+  .card__frase {
+    padding: 0 .5rem .5rem;
+    font-size: .75rem;
+    color: var(--fraco);
+    font-style: italic;
+  }
+
+  /* ---------- rodapé de saída ---------- */
+  .saida {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--caixa);
+    border-top: 1px solid var(--linha);
+    padding: .6rem 1rem;
+    display: flex;
+    gap: .6rem;
+    align-items: center;
+  }
+
+  .saida textarea {
+    flex: 1;
+    height: 4.5rem;
+    resize: vertical;
+    font: 12px/1.45 ui-monospace, "Cascadia Code", Consolas, monospace;
+    background: #0e1114;
+    color: var(--texto);
+    border: 1px solid var(--linha);
+    border-radius: 6px;
+    padding: .5rem;
+    white-space: pre;
+  }
+
+  .saida .botoes { display: flex; flex-direction: column; gap: .4rem; }
+
+  .aviso { color: var(--alerta); font-size: .8rem; }
+
+  .vazio { padding: 3rem 1rem; text-align: center; color: var(--fraco); }
+</style>
+</head>
+
+<body>
+
+<header class="topo">
+  <h1>Datador</h1>
+  <span class="progresso" id="progresso"></span>
+
+  <span class="grupo">
+    <label for="filtro">mostrar</label>
+    <select id="filtro">
+      <option value="sem">só as sem data</option>
+      <option value="todas">todas</option>
+      <option value="com">só as já datadas</option>
+    </select>
+  </span>
+
+  <span class="grupo">
+    <input type="date" id="dataLote" aria-label="Data para aplicar em lote">
+    <button type="button" id="aplicarLote" disabled>aplicar aos marcados</button>
+    <button type="button" id="desmarcar" disabled>desmarcar</button>
+  </span>
+
+  <span class="grupo">
+    <button type="button" id="recomecar">recomeçar do momentos.js</button>
+  </span>
+</header>
+
+<div class="grade" id="grade"></div>
+
+<footer class="saida">
+  <textarea id="saida" readonly spellcheck="false"
+            placeholder="Clique em Gerar — o bloco fotosPorDia sai aqui, pronto para colar no data/momentos.js."></textarea>
+  <span class="botoes">
+    <button type="button" class="primario" id="gerar">Gerar</button>
+    <button type="button" id="copiar">Copiar</button>
+  </span>
+</footer>
+
+<!-- a mesma fonte de dados do site: fotos, fotosPorDia, frasesPorDia -->
+<script src="data/momentos.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var PASTA = "assets/fotos/";
+  var CHAVE_LS = "datador:fotosPorDia";
+
+  var elGrade   = document.getElementById("grade");
+  var elFiltro  = document.getElementById("filtro");
+  var elProg    = document.getElementById("progresso");
+  var elSaida   = document.getElementById("saida");
+  var elLote    = document.getElementById("dataLote");
+  var btnLote   = document.getElementById("aplicarLote");
+  var btnDesm   = document.getElementById("desmarcar");
+
+  /* id -> "AAAA-MM-DD". Uma foto mora num dia só; o inverso (um dia com
+     várias fotos) sai naturalmente na hora de gerar o bloco. */
+  var datas = {};
+  var marcados = {};
+
+  function ehVideo(id) { return id.indexOf("video-") === 0; }
+  function caminho(id) { return PASTA + id + (ehVideo(id) ? ".mp4" : ".jpg"); }
+  function thumb(id)   { return ehVideo(id) ? "" : PASTA + "thumbs/" + id + ".jpg"; }
+
+  /* ---- ponto de partida: o que o momentos.js já sabe ---- */
+  function doMomentos() {
+    var saida = {};
+    if (typeof fotosPorDia === "undefined") return saida;
+    Object.keys(fotosPorDia).forEach(function (dia) {
+      (fotosPorDia[dia] || []).forEach(function (id) { saida[id] = dia; });
+    });
+    return saida;
+  }
+
+  function carregar() {
+    try {
+      var bruto = localStorage.getItem(CHAVE_LS);
+      if (bruto) { datas = JSON.parse(bruto); return; }
+    } catch (e) { /* localStorage bloqueado — segue sem rascunho */ }
+    datas = doMomentos();
+  }
+
+  function salvar() {
+    try { localStorage.setItem(CHAVE_LS, JSON.stringify(datas)); } catch (e) {}
+  }
+
+  /* ---- desenho ---- */
+  function visiveis() {
+    var modo = elFiltro.value;
+    return fotos.filter(function (id) {
+      if (modo === "sem") return !datas[id];
+      if (modo === "com") return !!datas[id];
+      return true;
+    });
+  }
+
+  function frasePara(dia) {
+    return (dia && typeof frasesPorDia !== "undefined" && frasesPorDia[dia]) || "";
+  }
+
+  function cartao(id) {
+    var dia = datas[id] || "";
+
+    var card = document.createElement("div");
+    card.className = "card" + (dia ? " datado" : "") + (marcados[id] ? " marcado" : "");
+
+    var alvo = document.createElement("button");
+    alvo.type = "button";
+    alvo.className = "card__midia";
+    alvo.title = "clicar marca/desmarca — use a lupa para ver grande";
+
+    if (ehVideo(id)) {
+      var v = document.createElement("video");
+      v.src = caminho(id);
+      v.preload = "metadata";
+      v.muted = true;
+      alvo.appendChild(v);
+    } else {
+      var img = document.createElement("img");
+      img.src = thumb(id);
+      img.alt = id;
+      img.loading = "lazy";
+      alvo.appendChild(img);
+    }
+
+    var etiqueta = document.createElement("span");
+    etiqueta.className = "card__id";
+    etiqueta.textContent = id;
+    alvo.appendChild(etiqueta);
+
+    alvo.addEventListener("click", function () {
+      if (marcados[id]) delete marcados[id]; else marcados[id] = true;
+      card.classList.toggle("marcado", !!marcados[id]);
+      atualizarLote();
+    });
+    card.appendChild(alvo);
+
+    var lupa = document.createElement("a");
+    lupa.className = "card__lupa";
+    lupa.href = caminho(id);
+    lupa.target = "_blank";
+    lupa.rel = "noopener";
+    lupa.textContent = "⤢";
+    lupa.title = "abrir em tamanho grande";
+    card.appendChild(lupa);
+
+    var pe = document.createElement("div");
+    pe.className = "card__pe";
+
+    var campo = document.createElement("input");
+    campo.type = "date";
+    campo.value = dia;
+    campo.setAttribute("aria-label", "Data de " + id);
+    campo.addEventListener("change", function () {
+      definir(id, campo.value);
+      // a foto pode sumir da tela se o filtro for "só as sem data"
+      if (elFiltro.value !== "todas") desenhar(); else atualizarProgresso();
+    });
+    pe.appendChild(campo);
+
+    var limpar = document.createElement("button");
+    limpar.type = "button";
+    limpar.className = "limpar";
+    limpar.textContent = "×";
+    limpar.title = "tirar a data";
+    limpar.addEventListener("click", function () {
+      definir(id, "");
+      desenhar();
+    });
+    pe.appendChild(limpar);
+
+    card.appendChild(pe);
+
+    // se o dia já tem recado escrito, mostrar ajuda a reconhecer a data
+    var frase = frasePara(dia);
+    if (frase) {
+      var p = document.createElement("p");
+      p.className = "card__frase";
+      p.textContent = frase;
+      card.appendChild(p);
+    }
+
+    return card;
+  }
+
+  function desenhar() {
+    var lista = visiveis();
+    elGrade.innerHTML = "";
+
+    if (!lista.length) {
+      var vazio = document.createElement("p");
+      vazio.className = "vazio";
+      vazio.textContent = elFiltro.value === "sem"
+        ? "Todas as fotos têm data. 🎉 Agora é gerar o bloco e colar no momentos.js."
+        : "Nada para mostrar com este filtro.";
+      elGrade.appendChild(vazio);
+    } else {
+      var pedaco = document.createDocumentFragment();
+      lista.forEach(function (id) { pedaco.appendChild(cartao(id)); });
+      elGrade.appendChild(pedaco);
+    }
+
+    atualizarProgresso();
+    atualizarLote();
+  }
+
+  function definir(id, dia) {
+    if (dia) datas[id] = dia; else delete datas[id];
+    salvar();
+  }
+
+  function atualizarProgresso() {
+    var comData = fotos.filter(function (id) { return !!datas[id]; }).length;
+    var dias = {};
+    fotos.forEach(function (id) { if (datas[id]) dias[datas[id]] = true; });
+
+    elProg.innerHTML = "<b>" + comData + "</b> de " + fotos.length +
+                       " datadas · " + Object.keys(dias).length + " dias no calendário";
+  }
+
+  function atualizarLote() {
+    var quantos = Object.keys(marcados).length;
+    btnLote.disabled = !quantos;
+    btnDesm.disabled = !quantos;
+    btnLote.textContent = quantos
+      ? "aplicar aos " + quantos + " marcados"
+      : "aplicar aos marcados";
+  }
+
+  /* ---- gerar o bloco para colar ---- */
+  function gerar() {
+    var porDia = {};
+    // varre na ordem de `fotos` para as fotos saírem na ordem da galeria
+    fotos.forEach(function (id) {
+      var dia = datas[id];
+      if (!dia) return;
+      if (!porDia[dia]) porDia[dia] = [];
+      porDia[dia].push(id);
+    });
+
+    var chaves = Object.keys(porDia).sort();   // AAAA-MM-DD ordena como texto
+    if (!chaves.length) {
+      elSaida.value = "// nenhuma foto datada ainda";
+      return;
+    }
+
+    var linhas = chaves.map(function (dia) {
+      var ids = porDia[dia].map(function (id) { return '"' + id + '"'; }).join(", ");
+      return '  "' + dia + '": [' + ids + ']';
+    });
+
+    elSaida.value = "const fotosPorDia = {\n" + linhas.join(",\n") + "\n};";
+
+    // dias com foto mas sem recado — não é erro, é só um lembrete
+    var semFrase = chaves.filter(function (dia) { return !frasePara(dia); });
+    if (semFrase.length) {
+      elSaida.value += "\n\n/* sem recado em frasesPorDia (opcional): " +
+                       semFrase.join(", ") + " */";
+    }
+  }
+
+  /* ---- ligações ---- */
+  elFiltro.addEventListener("change", desenhar);
+
+  btnLote.addEventListener("click", function () {
+    var dia = elLote.value;
+    if (!dia) { alert("Escolha a data antes de aplicar."); return; }
+    Object.keys(marcados).forEach(function (id) { definir(id, dia); });
+    marcados = {};
+    desenhar();
+  });
+
+  btnDesm.addEventListener("click", function () {
+    marcados = {};
+    desenhar();
+  });
+
+  document.getElementById("recomecar").addEventListener("click", function () {
+    if (!confirm("Jogar fora o rascunho do navegador e voltar ao que está no data/momentos.js?")) return;
+    try { localStorage.removeItem(CHAVE_LS); } catch (e) {}
+    datas = doMomentos();
+    marcados = {};
+    desenhar();
+  });
+
+  document.getElementById("gerar").addEventListener("click", gerar);
+
+  document.getElementById("copiar").addEventListener("click", function () {
+    if (!elSaida.value) gerar();
+    elSaida.removeAttribute("readonly");
+    elSaida.select();
+    // over file:// a área de transferência costuma ser bloqueada; o select
+    // acima deixa o texto pronto para um Ctrl+C manual de qualquer jeito
+    var deu = false;
+    try { deu = document.execCommand("copy"); } catch (e) {}
+    elSaida.setAttribute("readonly", "readonly");
+    if (!deu) alert("Não deu para copiar sozinho — o texto já está selecionado, é só Ctrl+C.");
+  });
+
+  if (typeof fotos === "undefined") {
+    document.body.innerHTML =
+      "<p class='vazio'>Não achei o <code>data/momentos.js</code>. " +
+      "Este arquivo precisa ficar na raiz do projeto, ao lado do index.html.</p>";
+    return;
+  }
+
+  carregar();
+  desenhar();
+})();
+</script>
+
+</body>
+</html>

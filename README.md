@@ -20,6 +20,11 @@ código das seções.
    aparece quebrada na grade.
 3. Acrescente `"foto-083"` no fim da lista `fotos`.
 
+> **A extensão tem que ser `.jpg`**, nos dois arquivos. O código monta o
+> caminho com `.jpg` fixo (`Lightbox.caminho`), então uma foto salva como
+> `.jpeg` simplesmente não carrega — e sem barulho nenhum, só o quadro vazio.
+> Celular e WhatsApp gostam de `.jpeg`: renomeie antes de commitar.
+
 > **Redimensionar sem sair da máquina:** o `ffmpeg` já está instalado aqui.
 > Com a foto original em `assets/fotos/originais/`, os dois arquivos saem de
 > dois comandos (o `if` é só para o lado maior valer, seja retrato ou paisagem):
@@ -36,6 +41,18 @@ código das seções.
 Vídeo é igual, com `"video-002"` e o `.mp4` em `assets/fotos/`. Vídeo não
 precisa de miniatura: a grade mostra um card com o ícone de play.
 
+> **Tarja preta em vídeo de celular:** gravação de tela sai com faixa preta em
+> cima e embaixo, gravada no arquivo — CSS nenhum tira. O `ffmpeg` mede e corta:
+>
+> ```sh
+> cd assets/fotos
+> ffmpeg -i video-004.mp4 -vf cropdetect=limit=24:round=2 -f null -    # diz o crop=L:A:X:Y
+> ffmpeg -i originais/video-004-original.mp4 -vf "crop=576:772:0:240" -an -c:v libx264 -crf 21 -preset slow -movflags +faststart video-004.mp4
+> ```
+>
+> Guarde o arquivo intocado em `originais/` antes (a pasta é gitignorada) e
+> passe `-an`: vídeo de marco toca mudo, a faixa de áudio é peso morto.
+
 ### 2. Marcar de que dia é uma foto (é isso que acende o calendário)
 
 No objeto `fotosPorDia`, a chave é a data em `AAAA-MM-DD` e o valor é a lista
@@ -48,12 +65,33 @@ const fotosPorDia = {
 };
 ```
 
-As fotos continuam todas na galeria de qualquer jeito — datar é opcional, dá
-para ir fazendo aos poucos.
+Um dia pode ter quantas fotos você quiser — no calendário ele acende, e ao
+tocar nele o lightbox abre na primeira e você passa para as outras com as
+setinhas. As fotos continuam todas na galeria de qualquer jeito: datar é
+opcional, dá para ir fazendo aos poucos.
 
-> ⚠️ **`2026-05-22` ainda usa uma foto de exemplo** (`foto-002`). As fotos
-> vieram do WhatsApp sem data (o EXIF é apagado no envio), então não deu para
-> saber de que dia cada uma é. Troque pela certa quando souber.
+As fotos vieram do WhatsApp sem data (o EXIF é apagado no envio), então não há
+como o computador adivinhar — cada dia é escrito na mão.
+
+#### O datador — a forma menos chata de fazer isso
+
+Abrir o `momentos.js` e datar 100 fotos de cabeça é sofrimento. Por isso existe
+o **`datador.html`**, na raiz do projeto: dá um duplo clique nele e o navegador
+mostra todas as fotos em grade, cada uma com um campo de data embaixo.
+
+- o filtro do topo começa em **"só as sem data"** — o que falta fica na cara
+- clicar numa foto a **marca**; marque várias, escolha a data lá em cima e
+  **"aplicar aos marcados"** data o bloco inteiro de uma vez
+- o **⤢** no canto abre a foto em tamanho grande, para quando a miniatura não
+  for suficiente para você lembrar do dia
+- o progresso fica **salvo no navegador** a cada tecla — dá para fechar no meio
+  e continuar depois
+- no fim, **"Gerar"** escreve o bloco `const fotosPorDia = { ... }` pronto;
+  copie e cole por cima do que está no `data/momentos.js`
+
+O datador **não faz parte do site** — nada no `index.html` aponta para ele, e
+ele lê a lista de fotos do próprio `data/momentos.js`. Foto nova na lista
+`fotos` aparece nele sozinha.
 
 ### 3. Escrever o recado de um dia
 
@@ -91,6 +129,11 @@ Um objeto novo no array `timeline`:
   corte: true               // opcional, ver abaixo
 }
 ```
+
+Um trecho da `descricao` entre `*asteriscos*` sai em **dourado e negrito** —
+`descricao: "Tudo reforça o quanto *Te amo*!"`. É o único enfeite que o texto
+aceita; o resto da frase segue texto puro, e asterisco desemparelhado fica
+sendo só um asterisco.
 
 A ordem no arquivo não importa — a timeline se ordena sozinha pela data.
 
@@ -260,6 +303,7 @@ deixa o fechamento apressado).
 
 ```
 index.html            as seções, na ordem em que aparecem
+datador.html          ferramenta local para datar as fotos (não faz parte do site)
 css/style.css         todo o visual (paleta nas variáveis do :root)
 js/
   lightbox.js         o visualizador de foto/vídeo — usado pelo calendário E pela galeria

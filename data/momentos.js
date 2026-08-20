@@ -86,8 +86,12 @@ const fotos = [
   "foto-073", "foto-074", "foto-075", "foto-076", "foto-077", "foto-078",
   "foto-079", "foto-080", "foto-081", "foto-082", "foto-083", "foto-084",
   "foto-085", "foto-086", "foto-087", "foto-088", "foto-089", "foto-090",
-  "foto-091", "foto-092", "foto-093", "foto-094",
-  "video-001"
+  "foto-091", "foto-092", "foto-093", "foto-094", "foto-095", "foto-096",
+  "foto-097", "foto-098", "foto-099", "foto-100", "foto-101", "foto-102",
+  "foto-103", "foto-104", "foto-105", "foto-106", "foto-107", "foto-108",
+  "foto-109", "foto-110", "foto-111", "foto-112", "foto-113", "foto-114",
+  "foto-115", "foto-116", "foto-117", "foto-118", "foto-119", "foto-120",
+  "foto-121", "video-001", "video-003", "video-004"
 ];
 
 /* --------------------------------------------------------------------------
@@ -111,7 +115,69 @@ const fotosPorDia = {
   "2025-12-15": ["foto-086"],
   "2025-12-25": ["foto-087", "foto-088"],
   "2025-12-26": ["foto-089"],
-  "2025-12-31": ["foto-002"]
+  "2025-12-31": [
+    "foto-001", "foto-002", "foto-003", "foto-090",
+    "foto-091"
+  ],
+  "2026-01-05": ["foto-096"],
+  "2026-01-08": ["foto-099"],
+  "2026-01-09": ["foto-007", "foto-097", "foto-100", "foto-101"],
+  "2026-01-10": ["foto-098", "foto-102"],
+  "2026-02-07": ["foto-004", "foto-005", "foto-006"],
+  "2026-02-13": ["foto-103"],
+  "2026-02-14": ["foto-104"],
+  "2026-03-13": ["foto-106"],
+  "2026-03-14": ["foto-105"],
+  "2026-03-27": ["foto-121", "video-004"],
+  "2026-04-05": ["foto-010"],
+  "2026-04-10": ["foto-107"],
+  "2026-04-12": ["foto-008", "foto-009", "foto-108", "foto-109"],
+  "2026-04-20": ["foto-013"],
+  "2026-05-03": ["foto-011"],
+  "2026-05-09": ["foto-012"],
+  "2026-05-16": [
+    "foto-014", "foto-015", "foto-110", "foto-111",
+    "foto-112"
+  ],
+  "2026-05-22": ["foto-113", "foto-114"],
+  "2026-05-29": [
+    "foto-017", "foto-018", "foto-019", "foto-021",
+    "foto-023", "foto-025", "foto-026", "foto-027",
+    "foto-028", "foto-029", "foto-095"
+  ],
+  "2026-05-30": ["foto-016", "foto-020", "foto-022", "foto-024"],
+  "2026-06-04": ["foto-115"],
+  "2026-06-05": [
+    "foto-030", "foto-031", "foto-032", "foto-033",
+    "foto-034", "foto-035", "foto-036", "foto-037",
+    "foto-038", "foto-039", "foto-040", "foto-041",
+    "foto-042", "foto-045"
+  ],
+  "2026-06-06": ["foto-043", "foto-044"],
+  "2026-06-13": ["foto-046", "foto-047", "foto-051", "foto-053"],
+  "2026-06-14": ["foto-048", "foto-049", "foto-070", "foto-071"],
+  "2026-06-19": ["foto-050"],
+  "2026-06-28": [
+    "foto-052", "foto-054", "foto-055", "foto-056",
+    "foto-057", "foto-058", "foto-116"
+  ],
+  "2026-07-03": ["foto-059", "foto-060", "foto-061"],
+  "2026-07-05": [
+    "foto-062", "foto-063", "foto-064", "foto-065",
+    "foto-066", "foto-067", "foto-069"
+  ],
+  "2026-07-06": ["foto-068"],
+  "2026-07-07": ["foto-073"],
+  "2026-07-17": ["foto-072", "foto-074", "foto-075", "foto-076"],
+  "2026-07-18": ["foto-077", "foto-079"],
+  "2026-07-22": [
+    "foto-078", "foto-080", "foto-081", "foto-082",
+    "video-001"
+  ],
+  "2026-07-26": ["foto-117"],
+  "2026-08-06": ["foto-118"],
+  "2026-08-15": ["foto-119"],
+  "2026-08-19": ["foto-120", "video-003"]
 };
 
 /* --------------------------------------------------------------------------
@@ -136,7 +202,16 @@ const frasesPorDia = {
   "2025-12-25": "Merry Christmas!",
   "2025-12-26": "Festa pré-praia e o melhor expediente não remunerado que já tive.",
   "2025-12-31": "A virada de chave: o brinde que abriu 2026 com você do meu lado.",
-  "2026-05-22": "O dia em que a gente parou de enrolar e virou namoro de verdade."
+  "2026-02-07": "Muito bom passar toda e qualquer data contigo",
+  "2026-02-13": "Primeira viagem dirigindo e tu do meu lado",
+  "2026-03-13": "Manda pra elas seu fdp",
+  "2026-03-27": "Dia muito especial para mim, um dos dias mais felizes da minha vida",
+  "2026-04-10": "jetzt geht's los uuuniããããooo corinthiaaannss jetzt geht's los",
+  "2026-04-12": "E é fia da puta esse nosso cupido",
+  "2026-05-16": "Eu todo bobo do primeiro evento na tua família",
+  "2026-05-22": "O dia em que a gente parou de enrolar e virou namoro de verdade.",
+  "2026-06-04": "Nossa primeira viagem sozinhos juntos",
+  "2026-06-28": "Nem ia ter graça assistir o Brasil sem tua companhia"
 };
 
 /* --------------------------------------------------------------------------
@@ -222,15 +297,97 @@ const timeline = [
     foto: "foto-096"
   },
   {
-    data: "2026-01-05",
-    titulo: "Praia com minha família",
-    descricao: "Uma semaninha de farra e uma semaninha de descanso.",
-    foto: "foto-096"
+    data: "2026-02-07",
+    titulo: "O carnaval!",
+    descricao: "Muito bom passar toda e qualquer data contigo",
+    foto: "foto-004"
+  },
+  {
+    data: "2026-02-13",
+    titulo: "Viagem pra barragem",
+    descricao: "Primeira viagem dirigindo e tu do meu lado",
+    foto: "foto-103"
+  },
+  {
+    data: "2026-03-13",
+    titulo: "DJ MU540",
+    descricao: "Manda pra elas seu fdp",
+    foto: "foto-106"
+  },
+  {
+    /* atravessa a timeline e o título vira partículas, como o 31/12 e o 22/05,
+       mas sem `destaque`: a foto aparece como foto mesmo, inteira e no ratio
+       dela — o CSS do marco de corte não recorta em 4/3 como os comuns. */
+    data: "2026-03-27",
+    titulo: "A Virada de Chave",
+    descricao: "Dia muito especial para mim, um dos dias mais felizes da minha vida",
+    foto: "foto-121",
+    destaque: true,
+    corte: true,
+  },
+  {
+    data: "2026-04-10",
+    titulo: "Muitos jogos do União Continthians",
+    descricao: "jetzt geht's los uuuniããããooo corinthiaaannss jetzt geht's los",
+    foto: "foto-107"
+  },
+  {
+    data: "2026-04-12",
+    titulo: "Despedida do Berno",
+    descricao: "E é fia da puta esse nosso cupido",
+    foto: "foto-108"
+  },
+  {
+    data: "2026-05-16",
+    titulo: "Aniversário da tua mãe",
+    descricao: "Eu todo bobo do primeiro evento na tua família",
+    foto: "foto-111"
   },
   {
     data: "2026-05-22",
-    titulo: "Pedido Oficial!",
-    descricao: "O dia em que a gente parou de enrolar e virou namoro de verdade."
+    titulo: "O Grande Dia",
+    descricao: "Melhor sensação do mundo foi te entregar aquele buque e passar a noite na frente da lareira assistindo got.",
+    foto: "foto-114",
+    destaque: true,
+    corte: true,
+  },
+  {
+    data: "2026-06-04",
+    titulo: "Viagem pra Serra",
+    descricao: "Nossa primeira viagem sozinhos juntos",
+    foto: "foto-115"
+  },
+  {
+    data: "2026-06-28",
+    titulo: "Copa do Mundo 2026",
+    descricao: "Nem ia ter graça assistir o Brasil sem tua companhia",
+    foto: "foto-116"
+  },
+  {
+    data: "2026-07-26",
+    titulo: "Dias de Canastra",
+    descricao: "Nossos dias de canastra sempre reforçam meu amor por ti!",
+    foto: "foto-117"
+  },
+  {
+    data: "2026-08-06",
+    titulo: "Neny Remoto",
+    descricao: "Se Moisés não vai até o Neny, o Neny vai até Moisés.",
+    foto: "foto-118"
+  },
+  {
+    data: "2026-08-15",
+    titulo: "O tempo contigo",
+    descricao: "Final de semana passado sempre reforçando o quanto eu amo dormir, acordar...",
+    foto: "foto-119"
+  },
+  {
+    data: "2026-08-19",
+    titulo: "Hoje",
+    /* os asteriscos viram o destaque dourado — quem os lê é o
+       montarDescricao() do js/timeline.js */
+    descricao: "...jantar, almoçar, tomar café, ir pra faculdade, treinar, home office, beber, cantar, dançar. Tudo reforça o quanto *Te amo*!",
+    foto: "foto-120"
   }
   // Novo marco? É só copiar um bloco acima e mudar os campos.
 ];
